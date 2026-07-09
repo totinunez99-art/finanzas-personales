@@ -1,0 +1,8 @@
+id: statements/generic/001-mes-normal
+schema_version: 1
+source: sintetico
+created: 2026-07-06
+validates: [parser]
+status: active
+notes: "Mes típico formato CSV de referencia: separador ';', fechas ISO, miles chilenos con punto."
+bug_ref: null

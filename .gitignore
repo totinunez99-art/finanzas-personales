@@ -1,0 +1,33 @@
+# Secretos — nunca versionar
+.env
+
+# Golden dataset: originales con datos financieros reales (docs/13)
+golden/originals/*
+!golden/originals/README.md
+
+# Runtime (docs/02 §6: artefactos, no código)
+logs/
+backups/
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# Herramientas
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE / SO
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

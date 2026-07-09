@@ -1,0 +1,12 @@
+{
+  "transactions": [
+    {"posted_at": "2026-06-01", "amount": "-45990", "currency": "", "description_raw": "COMPRA SUPERMERCADO LIDER"},
+    {"posted_at": "2026-06-02", "amount": "1850000", "currency": "", "description_raw": "PAGO SUELDO EMPRESA"},
+    {"posted_at": "2026-06-03", "amount": "-12350", "currency": "", "description_raw": "COMPRA FARMACIA CRUZ VERDE"},
+    {"posted_at": "2026-06-05", "amount": "-50000", "currency": "", "description_raw": "TRANSFERENCIA A TERCERO"},
+    {"posted_at": "2026-06-10", "amount": "-35000", "currency": "", "description_raw": "COMPRA COPEC"},
+    {"posted_at": "2026-06-15", "amount": "-28750", "currency": "", "description_raw": "PAGO CUENTA LUZ ENEL"},
+    {"posted_at": "2026-06-20", "amount": "-18990", "currency": "", "description_raw": "COMPRA UBER EATS"},
+    {"posted_at": "2026-06-28", "amount": "1250", "currency": "", "description_raw": "INTERES CUENTA"}
+  ]
+}

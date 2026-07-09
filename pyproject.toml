@@ -1,0 +1,98 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "finanzas-personales"
+version = "0.1.0"
+description = "Copiloto financiero personal (Chile)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "sqlalchemy>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "alembic>=1.14",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "structlog>=24.4",
+    "apscheduler>=3.10,<4",
+    "streamlit>=1.40",
+    "requests>=2.32",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+    "pypdf>=6.0",          # flujo de PDF cifrado del wizard (docs/18 §1)
+    "pycryptodome>=3.20",  # AES para pypdf
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "httpx>=0.27",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "import-linter>=2.1",
+    "types-requests",
+    "types-PyYAML",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/finanzas"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["finanzas"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+# Estricto donde el costo de un bug es mayor (docs/08 §1); gradual en el resto.
+[[tool.mypy.overrides]]
+module = ["finanzas.core.*", "finanzas.shared.*"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["apscheduler.*", "streamlit.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------- import-linter (docs/02 §4)
+[tool.importlinter]
+root_package = "finanzas"
+
+[[tool.importlinter.contracts]]
+name = "Capas de la arquitectura"
+type = "layers"
+layers = [
+    "finanzas.api | finanzas.workers | finanzas.dashboard",
+    "finanzas.core",
+    "finanzas.connectors | finanzas.ai",
+    "finanzas.shared",
+]
+
+[[tool.importlinter.contracts]]
+name = "El dashboard solo habla con la API (ADR-006)"
+type = "forbidden"
+source_modules = ["finanzas.dashboard"]
+forbidden_modules = ["finanzas.core", "finanzas.connectors", "finanzas.ai"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: requiere PostgreSQL real (TEST_DATABASE_URL); se salta si no está",
+]

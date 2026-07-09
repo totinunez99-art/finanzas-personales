@@ -1,0 +1,9 @@
+# Manifiesto de caso golden — contrato en docs/13 §2
+id: <ruta/NNN-descripcion-corta>
+schema_version: 1
+source: real-anonimizado      # real-anonimizado | sintetico | derivado-de-bug
+created: <YYYY-MM-DD>
+validates: [parser]           # parser | dedup | reconciliation | classification | error
+status: active                # active | quarantine (motivo y fecha en notes)
+notes: ""
+bug_ref: null

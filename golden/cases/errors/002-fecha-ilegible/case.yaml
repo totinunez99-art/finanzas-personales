@@ -1,0 +1,8 @@
+id: errors/002-fecha-ilegible
+schema_version: 1
+source: sintetico
+created: 2026-07-06
+validates: [error]
+status: active
+notes: "Encabezado válido pero fecha corrupta: el parser DEBE fallar con fila exacta (tolerancia cero, docs/05 §3). Arreglar silenciosamente sería un bug."
+bug_ref: null

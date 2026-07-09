@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    name: Lint, tipos y tests unitarios
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -e ".[dev]"
+      - name: Ruff (lint + formato)
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Mypy
+        run: mypy
+      - name: Import-linter (fronteras de arquitectura)
+        run: lint-imports
+      - name: Tests unitarios
+        run: pytest tests/unit -v
+
+  integration:
+    name: Migraciones y esquema contra PostgreSQL real
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://ci:ci@localhost:5432/ci
+      DATABASE_URL: postgresql+psycopg://ci:ci@localhost:5432/ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -e ".[dev]"
+      - name: Tests de integración (migraciones + anti-deriva + round-trip)
+        run: pytest tests/integration -v

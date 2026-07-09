@@ -1,0 +1,8 @@
+id: errors/001-formato-desconocido
+schema_version: 1
+source: sintetico
+created: 2026-07-06
+validates: [error]
+status: active
+notes: "Encabezado ajeno: ningún parser debe reclamarlo. El wizard responde 'formato no compatible' y registra el archivo (docs/14) — NO es una excepción del sistema."
+bug_ref: null

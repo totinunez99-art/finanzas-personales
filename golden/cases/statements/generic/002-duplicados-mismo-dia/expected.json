@@ -1,0 +1,7 @@
+{
+  "transactions": [
+    {"posted_at": "2026-06-07", "amount": "-4500", "currency": "", "description_raw": "CAFE STARBUCKS"},
+    {"posted_at": "2026-06-07", "amount": "-4500", "currency": "", "description_raw": "CAFE STARBUCKS"},
+    {"posted_at": "2026-06-08", "amount": "-8900", "currency": "", "description_raw": "ALMUERZO RESTAURANT"}
+  ]
+}

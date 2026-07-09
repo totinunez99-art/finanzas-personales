@@ -1,0 +1,90 @@
+# Orden de arranque garantizado (docs/15 §Flujo):
+#   db (healthy) → bootstrap (migra + seed, one-shot) → api + worker → dashboard
+# Ningún servicio toca tablas antes de que bootstrap termine con éxito.
+
+x-app-image: &app-image
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+
+x-app-env: &app-env
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-finanzas}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-finanzas}
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-finanzas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?definir en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-finanzas}   # la crea el propio contenedor en el primer arranque
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"   # solo localhost (docs/06)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finanzas} -d ${POSTGRES_DB:-finanzas}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # One-shot: espera la DB, aplica migraciones Alembic y crea el usuario por
+  # defecto. Idempotente: en re-arranques termina en segundos sin efectos.
+  bootstrap:
+    <<: [*app-image, *app-env]
+    command: python scripts/bootstrap.py
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: [*app-image, *app-env]
+    restart: unless-stopped
+    command: uvicorn finanzas.api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      bootstrap:
+        condition: service_completed_successfully
+
+  worker:
+    <<: [*app-image, *app-env]
+    restart: unless-stopped
+    command: python -m finanzas.workers.scheduler
+    depends_on:
+      db:
+        condition: service_healthy
+      bootstrap:
+        condition: service_completed_successfully
+
+  dashboard:
+    <<: *app-image
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      API_BASE_URL: http://api:8000
+    command: streamlit run src/finanzas/dashboard/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    ports:
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      api:
+        condition: service_started   # tolera API ausente: muestra "sin conexión"
+
+  # Datos FICTICIOS bajo demanda: docker compose run --rm demo
+  # (opt-in deliberado: datos demo automáticos contaminarían un sistema real)
+  demo:
+    <<: [*app-image, *app-env]
+    profiles: ["demo"]
+    command: python scripts/demo.py
+    restart: "no"
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:

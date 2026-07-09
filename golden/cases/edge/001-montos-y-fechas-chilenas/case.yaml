@@ -1,0 +1,8 @@
+id: edge/001-montos-y-fechas-chilenas
+schema_version: 1
+source: sintetico
+created: 2026-07-06
+validates: [parser]
+status: active
+notes: "Bordes de parseo: DD/MM/YYYY y DD-MM-YYYY, miles con punto (1.234.567), decimal con coma (-5.940,50), USD con decimales, moneda vacía."
+bug_ref: null

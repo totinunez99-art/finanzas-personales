@@ -1,0 +1,8 @@
+id: statements/generic/002-duplicados-mismo-dia
+schema_version: 1
+source: sintetico
+created: 2026-07-06
+validates: [parser, dedup]
+status: active
+notes: "Dos compras idénticas el mismo día: el parser preserva AMBAS (caso borde docs/03 §4); el intra_day_seq lo asigna ImportService."
+bug_ref: null

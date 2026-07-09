@@ -1,0 +1,8 @@
+{
+  "transactions": [
+    {"posted_at": "2026-06-01", "amount": "-45.90", "currency": "USD", "description_raw": "COMPRA AMAZON"},
+    {"posted_at": "2026-06-02", "amount": "-1234567", "currency": "CLP", "description_raw": "COMPRA MERCADOLIBRE"},
+    {"posted_at": "2026-06-03", "amount": "125000", "currency": "", "description_raw": "REEMBOLSO SEGURO"},
+    {"posted_at": "2026-06-04", "amount": "-5940.50", "currency": "CLP", "description_raw": "SUSCRIPCION SPOTIFY"}
+  ]
+}
