@@ -46,3 +46,5 @@ Checklist ejecutable (el detalle numérico vive en docs/16; aquí el resumen del
 | Fecha | Gate | Resultado | Evidencia |
 |---|---|---|---|
 | 2026-07-08 | G3 (parcial, bloque 1) | 39/39 tests unit+golden en sandbox (Python 3.10+shim; no autoritativo) + py_compile limpio | Sesión 12; CI pendiente |
+| 2026-07-08 | G1/G2 (primer push) | **CI ROJA** — 2 jobs fallidos. Causas raíz: (1) `ruff format` nunca ejecutado (20 archivos) + 28 errores lint (25 = falso positivo B008/FastAPI, resuelto con `extend-immutable-calls`); (2) bug real en `stats_summary`: montos `"1000000.0000"` con ceros espurios de Numeric(18,4) — detectado reproduciendo la integración en sandbox con Postgres embebido (pgserver) ANTES de la CI | Sesión 12; fix `_fmt_amount` canónico |
+| 2026-07-08 | G1/G2 (pre re-push) | Pipeline local completo VERDE: ruff check+format ✓ · mypy 58 archivos ✓ · import-linter 2/2 contratos ✓ · unit+golden 39/39 ✓ · integración 7/7 con PG embebido (única omisión: pg_trgm, no disponible en sandbox; la imagen postgres:16 de CI sí lo trae) | Sesión 12; autoritativo = CI del re-push |

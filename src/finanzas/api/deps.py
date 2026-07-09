@@ -31,9 +31,6 @@ def get_current_user(db: Session = Depends(get_db)) -> User:
     if user is None:
         raise HTTPException(
             status_code=503,
-            detail=(
-                f"No existe el usuario por defecto ({email}). "
-                "Ejecuta: python scripts/seed.py"
-            ),
+            detail=(f"No existe el usuario por defecto ({email}). Ejecuta: python scripts/seed.py"),
         )
     return user

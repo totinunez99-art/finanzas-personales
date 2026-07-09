@@ -43,8 +43,10 @@ def main() -> int:
         return 1
     except Exception as exc:  # cualquier fallo debe bloquear el arranque, no esconderse
         logger.error("bootstrap_failed", error=str(exc), exc_info=True)
-        print(f"\nBOOTSTRAP FALLÓ: {exc}\nVer: docs/15-instalacion-y-troubleshooting.md\n",
-              file=sys.stderr)
+        print(
+            f"\nBOOTSTRAP FALLÓ: {exc}\nVer: docs/15-instalacion-y-troubleshooting.md\n",
+            file=sys.stderr,
+        )
         return 1
 
     logger.info("bootstrap_completed")

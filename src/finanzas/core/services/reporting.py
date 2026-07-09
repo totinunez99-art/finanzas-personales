@@ -20,17 +20,19 @@ from finanzas.core.services.dedup import normalize_description
 @dataclass(frozen=True)
 class TransactionFilters:
     account_id: uuid.UUID | None = None
-    q: str | None = None                 # búsqueda en descripción (insensible a tildes)
+    q: str | None = None  # búsqueda en descripción (insensible a tildes)
     date_from: date | None = None
     date_to: date | None = None
-    amount_min: Decimal | None = None    # sobre el VALOR ABSOLUTO (intuición del usuario)
+    amount_min: Decimal | None = None  # sobre el VALOR ABSOLUTO (intuición del usuario)
     amount_max: Decimal | None = None
-    kind: str | None = None              # cargo | abono
+    kind: str | None = None  # cargo | abono
     limit: int = 200
     offset: int = 0
 
 
-def _apply_filters(query: Select, user: User, f: TransactionFilters) -> Select:
+def _apply_filters(
+    query: "Select[tuple[Transaction]]", user: User, f: TransactionFilters
+) -> "Select[tuple[Transaction]]":
     query = query.where(Transaction.user_id == user.id)
     if f.account_id is not None:
         query = query.where(Transaction.account_id == f.account_id)
@@ -57,15 +59,18 @@ def list_transactions(
     session: Session, user: User, f: TransactionFilters
 ) -> tuple[int, list[Transaction]]:
     base = _apply_filters(select(Transaction), user, f)
-    total = session.execute(
-        select(func.count()).select_from(base.subquery())
-    ).scalar_one()
+    total = session.execute(select(func.count()).select_from(base.subquery())).scalar_one()
     rows = session.execute(
         base.order_by(Transaction.posted_at.desc(), Transaction.created_at.desc())
         .limit(f.limit)
         .offset(f.offset)
     ).scalars()
     return total, list(rows)
+
+
+def _fmt_amount(value: Decimal) -> str:
+    """Canonico sin ceros espurios: '1000000', '45.9'. La UI re-formatea al mostrar."""
+    return format(value.normalize(), "f")
 
 
 def _month_bounds(period: str | None) -> tuple[date, date]:
@@ -113,9 +118,9 @@ def stats_summary(
     by_currency = [
         {
             "currency": r.currency,
-            "income": str(r.income),
-            "expense": str(-r.expense),          # se expone como magnitud positiva
-            "net": str(r.income + r.expense),
+            "income": _fmt_amount(r.income),
+            "expense": _fmt_amount(-r.expense),  # se expone como magnitud positiva
+            "net": _fmt_amount(r.income + r.expense),
             "count": r.count,
         }
         for r in rows

@@ -13,25 +13,24 @@ if error:
     st.error(f"Sin conexión con la API: {error}")
     st.stop()
 
-with st.expander("➕ Crear cuenta", expanded=not accounts):
-    with st.form("nueva_cuenta"):
-        name = st.text_input("Nombre", placeholder="Cuenta Corriente")
-        bank = st.text_input("Banco", value="bancochile")
-        col1, col2 = st.columns(2)
-        account_type = col1.selectbox(
-            "Tipo", ["checking", "credit_card", "savings", "credit_line", "cash"]
+with st.expander("Crear cuenta nueva", expanded=not accounts), st.form("nueva_cuenta"):
+    name = st.text_input("Nombre", placeholder="Cuenta Corriente")
+    bank = st.text_input("Banco", value="bancochile")
+    col1, col2 = st.columns(2)
+    account_type = col1.selectbox(
+        "Tipo", ["checking", "credit_card", "savings", "credit_line", "cash"]
+    )
+    currency = col2.selectbox("Moneda", ["CLP", "USD", "UF"])
+    if st.form_submit_button("Crear"):
+        _, create_error = post_json(
+            "/accounts",
+            {"name": name, "bank": bank, "type": account_type, "currency": currency},
         )
-        currency = col2.selectbox("Moneda", ["CLP", "USD", "UF"])
-        if st.form_submit_button("Crear"):
-            _, create_error = post_json(
-                "/accounts",
-                {"name": name, "bank": bank, "type": account_type, "currency": currency},
-            )
-            if create_error:
-                st.error(create_error)
-            else:
-                st.success("Cuenta creada")
-                st.rerun()
+        if create_error:
+            st.error(create_error)
+        else:
+            st.success("Cuenta creada")
+            st.rerun()
 
 if not accounts:
     st.info("Crea una cuenta para poder importar.")
@@ -96,7 +95,9 @@ if checks or confidence is not None:
     ):
         for c in checks:
             icon = "✅" if c["passed"] else "❌"
-            detail = f" (esperado {c['expected']}, observado {c['actual']})" if c["expected"] else ""
+            detail = (
+                f" (esperado {c['expected']}, observado {c['actual']})" if c["expected"] else ""
+            )
             st.write(f"{icon} {c['name']}{detail}")
 
 col_a, col_b, col_c = st.columns(3)

@@ -30,9 +30,7 @@ def ensure_account(
     ).scalar_one_or_none()
     if account is not None:
         return account, False
-    account = Account(
-        user_id=user.id, name=name, bank=bank, type=account_type, currency=currency
-    )
+    account = Account(user_id=user.id, name=name, bank=bank, type=account_type, currency=currency)
     session.add(account)
     session.flush()
     return account, True

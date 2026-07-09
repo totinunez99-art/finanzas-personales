@@ -80,7 +80,7 @@ def dataset(migrated_engine):  # type: ignore[no-untyped-def]
 def test_filtros(dataset) -> None:  # type: ignore[no-untyped-def]
     from finanzas.core.services.reporting import TransactionFilters, list_transactions
 
-    session, user, account = dataset
+    session, user, _account = dataset
 
     total, _ = list_transactions(session, user, TransactionFilters())
     assert total == 6
@@ -136,11 +136,11 @@ def test_stats_por_moneda(dataset) -> None:  # type: ignore[no-untyped-def]
     assert stats["total_count"] == 5
     clp = next(c for c in stats["by_currency"] if c["currency"] == "CLP")
     assert clp["income"] == "1000000"
-    assert clp["expense"] == "400490"    # 45990 + 4500 + 350000
+    assert clp["expense"] == "400490"  # 45990 + 4500 + 350000
     assert clp["net"] == "599510"
     assert clp["count"] == 4
     usd = next(c for c in stats["by_currency"] if c["currency"] == "USD")
-    assert usd["expense"] == "45.90" and usd["count"] == 1
+    assert usd["expense"] == "45.9" and usd["count"] == 1  # canonico sin cero final
 
     # Mes sin movimientos: vacío pero válido.
     empty = stats_summary(session, user, period="2025-01")

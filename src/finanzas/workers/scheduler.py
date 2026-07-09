@@ -45,8 +45,8 @@ def main() -> None:
             trigger=trigger,
             args=(name, fn),
             id=name,
-            max_instances=1,          # lock: nunca dos instancias del mismo job
-            coalesce=True,            # ejecuciones atrasadas colapsan en una
+            max_instances=1,  # lock: nunca dos instancias del mismo job
+            coalesce=True,  # ejecuciones atrasadas colapsan en una
             misfire_grace_time=3600,  # catch-up al encender el PC
         )
         # Además, una pasada inmediata al arrancar (docs/07 §2).

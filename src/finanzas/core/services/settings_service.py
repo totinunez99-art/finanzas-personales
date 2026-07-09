@@ -18,8 +18,8 @@ from finanzas.shared.flags import get_flag_def, validate_value
 
 class SettingsService:
     def __init__(self, ttl_seconds: int | None = None) -> None:
-        self._ttl = ttl_seconds if ttl_seconds is not None else (
-            get_settings().settings_cache_ttl_seconds
+        self._ttl = (
+            ttl_seconds if ttl_seconds is not None else (get_settings().settings_cache_ttl_seconds)
         )
         self._cache: dict[str, tuple[float, Any]] = {}
 

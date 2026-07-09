@@ -16,17 +16,17 @@ pytestmark = pytest.mark.integration
 TEST_URL = os.environ.get("TEST_DATABASE_URL", "")
 
 CSV = (
-    "fecha;descripcion;monto\n"
-    "2026-06-01;COMPRA SUPERMERCADO;-45.990\n"
-    "2026-06-07;CAFE STARBUCKS;-4.500\n"
-    "2026-06-07;CAFE STARBUCKS;-4.500\n"
-).encode()
+    b"fecha;descripcion;monto\n"
+    b"2026-06-01;COMPRA SUPERMERCADO;-45.990\n"
+    b"2026-06-07;CAFE STARBUCKS;-4.500\n"
+    b"2026-06-07;CAFE STARBUCKS;-4.500\n"
+)
 
 CSV_SEGUNDO_MES = (
-    "fecha;descripcion;monto\n"
-    "2026-06-07;CAFE STARBUCKS;-4.500\n"   # ya existe (seq 0) → duplicado
-    "2026-07-01;PAGO SUELDO;1.000.000\n"   # nuevo
-).encode()
+    b"fecha;descripcion;monto\n"
+    b"2026-06-07;CAFE STARBUCKS;-4.500\n"  # ya existe (seq 0) → duplicado
+    b"2026-07-01;PAGO SUELDO;1.000.000\n"  # nuevo
+)
 
 
 @pytest.fixture()

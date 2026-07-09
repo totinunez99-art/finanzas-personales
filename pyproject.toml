@@ -21,8 +21,8 @@ dependencies = [
     "requests>=2.32",
     "python-multipart>=0.0.9",
     "pyyaml>=6.0",
-    "pypdf>=6.0",          # flujo de PDF cifrado del wizard (docs/18 §1)
-    "pycryptodome>=3.20",  # AES para pypdf
+    "pypdf>=6.0",
+    "pycryptodome>=3.20",
 ]
 
 [project.optional-dependencies]
@@ -51,6 +51,11 @@ select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
 
+[tool.ruff.lint.flake8-bugbear]
+# Idioma estandar de FastAPI: Depends/Query/Form/File en defaults NO es el
+# antipatron que B008 persigue (son marcadores declarativos, no efectos).
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Form", "fastapi.File"]
+
 # ---------------------------------------------------------------- mypy
 [tool.mypy]
 python_version = "3.12"
@@ -61,7 +66,6 @@ warn_redundant_casts = true
 no_implicit_optional = true
 check_untyped_defs = true
 
-# Estricto donde el costo de un bug es mayor (docs/08 §1); gradual en el resto.
 [[tool.mypy.overrides]]
 module = ["finanzas.core.*", "finanzas.shared.*"]
 strict = true
@@ -70,7 +74,7 @@ strict = true
 module = ["apscheduler.*", "streamlit.*"]
 ignore_missing_imports = true
 
-# ---------------------------------------------------- import-linter (docs/02 §4)
+# ---------------------------------------------------- import-linter (docs/02)
 [tool.importlinter]
 root_package = "finanzas"
 
@@ -94,5 +98,5 @@ forbidden_modules = ["finanzas.core", "finanzas.connectors", "finanzas.ai"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-    "integration: requiere PostgreSQL real (TEST_DATABASE_URL); se salta si no está",
+    "integration: requiere PostgreSQL real (TEST_DATABASE_URL); se salta si no esta",
 ]

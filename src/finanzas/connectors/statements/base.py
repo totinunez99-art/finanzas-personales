@@ -18,26 +18,26 @@ class DetectionResult:
 
     parser_name: str
     bank: str
-    confidence: float  # 0.0–1.0; el registry elige el máximo
-    reason: str        # explicable en la UI ("encabezado coincide con ...")
+    confidence: float  # 0.0-1.0; el registry elige el máximo
+    reason: str  # explicable en la UI ("encabezado coincide con ...")
 
 
 @dataclass(frozen=True)
 class ParserCapabilities:
     """Capacidades declaradas del conector (mensajes del wizard, integraciones futuras)."""
 
-    file_types: tuple[str, ...]           # extensiones sin punto: ("csv",), ("pdf",)
+    file_types: tuple[str, ...]  # extensiones sin punto: ("csv",), ("pdf",)
     supports_password: bool = False
-    provides_metadata: bool = False       # metadata estructurada del documento
-    provides_balances: bool = False       # saldo inicial/final para cuadratura
-    provides_account_hint: bool = False   # puede proponer la cuenta destino
+    provides_metadata: bool = False  # metadata estructurada del documento
+    provides_balances: bool = False  # saldo inicial/final para cuadratura
+    provides_account_hint: bool = False  # puede proponer la cuenta destino
 
 
 @dataclass(frozen=True)
 class ValidationCheck:
     """Un chequeo de integridad, con evidencia (auditable en la UI y en el batch)."""
 
-    name: str          # ej: "cuadratura_global"
+    name: str  # ej: "cuadratura_global"
     passed: bool
     expected: str | None = None
     actual: str | None = None
@@ -104,9 +104,7 @@ class StatementParser(Protocol):
         """None si el archivo no es de este parser. Nunca lanza excepciones."""
         ...
 
-    def parse(
-        self, filename: str, content: bytes, password: str | None = None
-    ) -> ImportResult:
+    def parse(self, filename: str, content: bytes, password: str | None = None) -> ImportResult:
         """Parsea TODO el archivo o lanza ParserError con mensaje accionable.
         Las validaciones duras fallidas DEBEN lanzar (nada parcial silencioso)."""
         ...

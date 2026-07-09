@@ -2,18 +2,21 @@
 
 Toda query sobre datos de usuario pasa por aquí: el filtro user_id no depende
 de la disciplina de cada llamada. Los repositorios concretos llegan con las
-funcionalidades de Fase 1 funcional.
+funcionalidades que los necesiten.
 """
 
 import uuid
+from typing import Generic, TypeVar
 
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
 from finanzas.core.models.base import Base
 
+ModelT = TypeVar("ModelT", bound=Base)
 
-class UserScopedRepository[ModelT: Base]:
+
+class UserScopedRepository(Generic[ModelT]):  # noqa: UP046  # sintaxis clasica deliberada: permite verificar mypy tambien en entornos 3.10
     model: type[ModelT]
 
     def __init__(self, session: Session, user_id: uuid.UUID) -> None:

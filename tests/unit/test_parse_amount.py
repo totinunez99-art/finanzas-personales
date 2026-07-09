@@ -12,14 +12,14 @@ from finanzas.shared.errors import ParserError
     ("raw", "expected"),
     [
         ("-12345", Decimal("-12345")),
-        ("-12.345", Decimal("-12345")),          # miles chileno
-        ("1.234.567", Decimal("1234567")),       # miles chileno múltiple
-        ("-12.345,50", Decimal("-12345.50")),    # miles punto + decimal coma
-        ("-12,345.50", Decimal("-12345.50")),    # formato anglosajón
-        ("-45,90", Decimal("-45.90")),           # coma decimal
-        ("-45.90", Decimal("-45.90")),           # punto decimal (2 dígitos)
-        ("125.000", Decimal("125000")),          # 3 dígitos tras punto = miles
-        ("$ 1.250", Decimal("1250")),            # símbolo y espacios tolerados
+        ("-12.345", Decimal("-12345")),  # miles chileno
+        ("1.234.567", Decimal("1234567")),  # miles chileno múltiple
+        ("-12.345,50", Decimal("-12345.50")),  # miles punto + decimal coma
+        ("-12,345.50", Decimal("-12345.50")),  # formato anglosajón
+        ("-45,90", Decimal("-45.90")),  # coma decimal
+        ("-45.90", Decimal("-45.90")),  # punto decimal (2 dígitos)
+        ("125.000", Decimal("125000")),  # 3 dígitos tras punto = miles
+        ("$ 1.250", Decimal("1250")),  # símbolo y espacios tolerados
         ("+500", Decimal("500")),
     ],
 )

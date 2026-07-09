@@ -77,7 +77,11 @@ async def confirm_import(
     filename, content = await _read_upload(file)
     try:
         batch = import_service.import_statement(
-            db, user, _parse_uuid(account_id, "account_id"), filename, content,
+            db,
+            user,
+            _parse_uuid(account_id, "account_id"),
+            filename,
+            content,
             password=password,
         )
     except ParserError as exc:
@@ -101,9 +105,7 @@ def _batch_to_dict(batch: ImportBatch) -> dict[str, Any]:
         "detected_format": batch.detected_format,
         "validation": batch.validation,
         "extraction_confidence": (
-            str(batch.extraction_confidence)
-            if batch.extraction_confidence is not None
-            else None
+            str(batch.extraction_confidence) if batch.extraction_confidence is not None else None
         ),
         "rows_read": batch.rows_read,
         "rows_inserted": batch.rows_inserted,

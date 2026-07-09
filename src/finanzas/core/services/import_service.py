@@ -78,9 +78,7 @@ def _header_preview(content: bytes) -> str:
     return "\n".join(text.splitlines()[:3])[:500]
 
 
-def _register_unrecognized(
-    session: Session, user: User, filename: str, content: bytes
-) -> None:
+def _register_unrecognized(session: Session, user: User, filename: str, content: bytes) -> None:
     """Un formato desconocido es información para el próximo parser (docs/05)."""
     sha = _sha256(content)
     exists = session.execute(
@@ -119,9 +117,7 @@ def _resolve_password(content: bytes, password: str | None) -> PreviewResult | N
     return None
 
 
-def _prepare_rows(
-    account: Account, statement: ImportResult, sha: str
-) -> list[dict[str, Any]]:
+def _prepare_rows(account: Account, statement: ImportResult, sha: str) -> list[dict[str, Any]]:
     """RawTransaction → filas listas para insertar, con intra_day_seq y hash.
 
     intra_day_seq: correlativo por clave (fecha, monto, moneda, descripción)
@@ -145,9 +141,7 @@ def _prepare_rows(
                 "description_norm": description_norm,
                 "merchant": raw.merchant_hint,
                 "source_ref": f"{sha[:12]}:{raw.source_ref or index}",
-                "installment_info": (
-                    {"raw": raw.installment_raw} if raw.installment_raw else None
-                ),
+                "installment_info": ({"raw": raw.installment_raw} if raw.installment_raw else None),
                 "intra_day_seq": seq,
                 "dedup_hash": compute_dedup_hash(
                     str(account.id), raw.posted_at, raw.amount, currency, description_norm, seq

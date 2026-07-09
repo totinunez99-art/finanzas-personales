@@ -5,6 +5,7 @@ Revision ID: 0003
 Revises: 0002
 Create Date: 2026-07-08
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -21,12 +22,8 @@ def upgrade() -> None:
     op.add_column("import_batches", sa.Column("parser_version", sa.String(16), nullable=True))
     op.add_column("import_batches", sa.Column("detected_format", sa.String(64), nullable=True))
     op.add_column("import_batches", sa.Column("validation", JSONB(), nullable=True))
-    op.add_column(
-        "import_batches", sa.Column("opening_balance", sa.Numeric(18, 4), nullable=True)
-    )
-    op.add_column(
-        "import_batches", sa.Column("closing_balance", sa.Numeric(18, 4), nullable=True)
-    )
+    op.add_column("import_batches", sa.Column("opening_balance", sa.Numeric(18, 4), nullable=True))
+    op.add_column("import_batches", sa.Column("closing_balance", sa.Numeric(18, 4), nullable=True))
     op.add_column(
         "import_batches", sa.Column("extraction_confidence", sa.Numeric(4, 3), nullable=True)
     )

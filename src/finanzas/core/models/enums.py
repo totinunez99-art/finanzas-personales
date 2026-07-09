@@ -24,9 +24,9 @@ class CategoryKind(enum.StrEnum):
 
 class TransactionStatus(enum.StrEnum):
     PROVISIONAL = "provisional"  # nacida de email, aún sin cartola (docs/03 §5)
-    CONFIRMED = "confirmed"      # nacida de cartola
-    RECONCILED = "reconciled"    # email confirmado por cartola
-    ORPHAN = "orphan"            # email sin match tras llegar la cartola del período
+    CONFIRMED = "confirmed"  # nacida de cartola
+    RECONCILED = "reconciled"  # email confirmado por cartola
+    ORPHAN = "orphan"  # email sin match tras llegar la cartola del período
 
 
 class TransactionSource(enum.StrEnum):
@@ -56,7 +56,7 @@ class RuleOrigin(enum.StrEnum):
 class ImportBatchStatus(enum.StrEnum):
     PENDING = "pending"
     COMPLETED = "completed"
-    WARNING = "warning"   # p.ej. cuadratura de saldos no cierra (docs/05 §3)
+    WARNING = "warning"  # p.ej. cuadratura de saldos no cierra (docs/05 §3)
     FAILED = "failed"
 
 

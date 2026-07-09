@@ -118,9 +118,7 @@ class GenericCsvParser:
             )
         return None
 
-    def parse(
-        self, filename: str, content: bytes, password: str | None = None
-    ) -> ImportResult:
+    def parse(self, filename: str, content: bytes, password: str | None = None) -> ImportResult:
         text = _decode(content)
         lines = text.splitlines()
         if not lines:

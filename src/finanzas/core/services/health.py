@@ -42,8 +42,7 @@ def metrics_summary(session: Session) -> dict[str, Any]:
     rows = session.execute(
         select(JobRun).join(
             latest,
-            (JobRun.job_name == latest.c.job_name)
-            & (JobRun.started_at == latest.c.last_started),
+            (JobRun.job_name == latest.c.job_name) & (JobRun.started_at == latest.c.last_started),
         )
     ).scalars()
     jobs = [

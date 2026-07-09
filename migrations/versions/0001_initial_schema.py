@@ -4,6 +4,7 @@ Revision ID: 0001
 Revises:
 Create Date: 2026-07-06
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -249,9 +250,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name="pk_classification_decisions"),
     )
-    op.create_index(
-        "ix_classification_decisions_user_id", "classification_decisions", ["user_id"]
-    )
+    op.create_index("ix_classification_decisions_user_id", "classification_decisions", ["user_id"])
     op.create_index(
         "ix_classification_decisions_transaction_id",
         "classification_decisions",

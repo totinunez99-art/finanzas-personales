@@ -38,7 +38,8 @@ def configure_logging(settings: Settings) -> None:
 
 
 def get_logger(module: str) -> structlog.typing.FilteringBoundLogger:
-    return structlog.get_logger(module=module)
+    logger: structlog.typing.FilteringBoundLogger = structlog.get_logger(module=module)
+    return logger
 
 
 def new_correlation_id() -> str:

@@ -12,7 +12,7 @@ import requests
 
 _TIMEOUT_SECONDS = 30
 
-Result = tuple[Any | None, str | None]
+Result = tuple[Any, str | None]  # datos es None SOLO si error != None; st.stop() corta el flujo
 
 
 def api_base_url() -> str:

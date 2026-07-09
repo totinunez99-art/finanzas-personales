@@ -63,7 +63,7 @@ def render_transactions_table(
     items = data["items"]
     if not items:
         st.info("Sin movimientos para estos filtros.")
-        return data["total"]
+        return int(data["total"])
 
     rows = [
         {
@@ -77,4 +77,4 @@ def render_transactions_table(
         for t in items
     ]
     st.dataframe(rows, use_container_width=True, height=300 if compact else 600)
-    return data["total"]
+    return int(data["total"])

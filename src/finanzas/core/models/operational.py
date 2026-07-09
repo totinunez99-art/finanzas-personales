@@ -85,9 +85,7 @@ class JobRun(Base, UuidPkMixin):
     __tablename__ = "job_runs"
 
     job_name: Mapped[str] = mapped_column(String(64), index=True)
-    started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     status: Mapped[str] = mapped_column(String(8), default="running")  # JobStatus
     detail: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
