@@ -61,6 +61,12 @@ _CATALOG: dict[str, FlagDef] = {
             description="Presupuesto mensual LLM; superado, la IA se apaga (docs/11).",
         ),
         FlagDef(
+            key="resolution.order",
+            value_type=str,
+            default="merchant,category,flow",
+            description="Orden del Resolution Pipeline (CSV de nombres; docs/22).",
+        ),
+        FlagDef(
             key="connectors.email_polling",
             value_type=bool,
             default=True,

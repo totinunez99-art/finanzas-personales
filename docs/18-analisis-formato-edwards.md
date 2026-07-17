@@ -1,6 +1,9 @@
 # 18 — Análisis del Formato: Cartola Cuenta Corriente Banco Edwards (PDF)
 
-> Estado: **APROBADO con ajustes (sesión 11) — infraestructura implementada (bloque 1); parser en bloque 3**
+> Estado: **IMPLEMENTADO (sesión 13, bloque 2)** — parser `edwards_cc_pdf` v1.0.0 validado
+> contra la cartola real (19 tx, cuadratura dual exacta, confianza 1.0). Hallazgo nuevo
+> incorporado durante la implementación: el encabezado de la tabla tiene una SEGUNDA
+> línea ("DIA/MES ... O CARGOS O ABONOS") que debe saltarse (§9.11 implícito).
 > Ajustes aprobados: ImportResult + ValidationReport tipado + ParserCapabilities +
 > extraction_confidence determinista + golden principal basado en reales anonimizados
 > (sintéticos solo como complemento).

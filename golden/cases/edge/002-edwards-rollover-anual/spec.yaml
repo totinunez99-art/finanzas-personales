@@ -1,0 +1,15 @@
+account: "28503199"
+holder: "MARIA EJEMPLO DEMO"
+email: "demo@example.com"
+executive: "Ejecutivo Demo Uno"
+branch: "OFICINA DEMO NORTE"
+cartola_nro: 12
+period: {desde: "2026-12-29", hasta: "2027-01-30"}
+opening_date: "29/12"
+opening: 100000
+closing_date: "30/01"
+closing: 140000
+totals: {depositos: 0, otrosabonos: 50000, otroscargos: 10000, cheques: 0, giros: 0, impuestos: 0, retencion1: 0, retencionmas: 0, saldodisponible: 140000}
+rows:
+  - {date: "30/12", detalle: "PAGO:COPEC APP", sucursal: "INTERNET", cargo: 10000, saldo: 90000}
+  - {date: "05/01", detalle: "TRASPASO DE:SERVICIOS ANDINOS SPA", sucursal: "INTERNET", abono: 50000, saldo: 140000}

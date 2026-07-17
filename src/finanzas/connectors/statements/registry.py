@@ -1,11 +1,12 @@
 """Registro de parsers de cartola: la única lista que crece al agregar un banco."""
 
 from finanzas.connectors.statements.base import DetectionResult, StatementParser
+from finanzas.connectors.statements.edwards_cc_pdf import EdwardsCcPdfParser
 from finanzas.connectors.statements.generic_csv import GenericCsvParser
 
 _PARSERS: list[StatementParser] = [
     GenericCsvParser(),
-    # Próximo: BancoChileParser (nace con sus casos golden, docs/13).
+    EdwardsCcPdfParser(),  # bloque 2: nace con sus casos golden (docs/13, docs/18)
 ]
 
 

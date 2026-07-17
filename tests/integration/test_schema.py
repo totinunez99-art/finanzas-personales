@@ -38,7 +38,7 @@ def migrated_engine():  # type: ignore[no-untyped-def]
 def test_upgrade_head_aplica(migrated_engine) -> None:  # type: ignore[no-untyped-def]
     with migrated_engine.connect() as conn:
         version = conn.execute(text("SELECT version_num FROM alembic_version")).scalar()
-    assert version == "0003"
+    assert version == "0005"
 
 
 def test_sin_deriva_entre_modelos_y_migracion(migrated_engine) -> None:  # type: ignore[no-untyped-def]

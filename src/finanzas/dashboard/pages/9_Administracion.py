@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from finanzas.dashboard.api_client import api_base_url, get_json
+from finanzas.dashboard.api_client import api_base_url, get_json, post_json
 
 st.set_page_config(page_title="Administración", page_icon="🔧", layout="wide")
 st.title("🔧 Administración — Salud del sistema")
@@ -29,7 +29,7 @@ if summary_error or summary is None:
 else:
     jobs = summary.get("jobs", [])
     if jobs:
-        st.dataframe(jobs, use_container_width=True)
+        st.dataframe(jobs, width="stretch")
     else:
         st.info("Sin ejecuciones de jobs aún. El heartbeat corre cada 5 minutos.")
 
@@ -39,3 +39,28 @@ else:
     if flags:
         st.subheader("Flags con valor no-default")
         st.json(flags)
+
+
+st.divider()
+st.subheader("Resolution Pipeline")
+st.caption(
+    "Una sola tubería enriquece los movimientos: comercio → categoría (→ futuros: "
+    "recurrencias, suscripciones, anomalías, IA). Cada decisión queda auditada."
+)
+col_dry, col_run = st.columns(2)
+if col_dry.button("👁 Simular (dry-run)", help="Calcula qué cambiaría SIN escribir nada"):
+    report, error = post_json("/resolution/run", {"dry_run": True})
+    if error:
+        st.error(error)
+    else:
+        st.json({k: v for k, v in report.items() if k != "samples"})
+        if report.get("samples"):
+            st.write("Muestra de propuestas:")
+            st.json(report["samples"][:10])
+if col_run.button("▶ Ejecutar pipeline", type="primary"):
+    report, error = post_json("/resolution/run", {"dry_run": False})
+    if error:
+        st.error(error)
+    else:
+        st.success("Pipeline ejecutado.")
+        st.json({k: v for k, v in report.items() if k != "samples"})

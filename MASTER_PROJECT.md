@@ -2,7 +2,7 @@
 
 > **Memoria viva del proyecto.** Se actualiza en cada sesión de trabajo. Si algo
 > importante se decidió en un chat y no está aquí o en un ADR, no existe.
-> Última actualización: **2026-07-08 (sesión 12 — regla de Quality Gates; Gate 1 en validación)**
+> Última actualización: **2026-07-09 (sesión 14 — Sprint 3 Bloque 1: Insights + dashboard inteligente; esperando aprobación para Bloque 2)**
 
 ## 1. Estado actual
 
@@ -114,6 +114,110 @@ Tomás con: sincronizar árboles → git init/push → CI verde → compose limp
 fases A-B-C. El bloque 2 de Edwards NO comienza hasta cerrar ese gate. docs/19 §Gate
 activo tiene el checklist; los comandos exactos fueron entregados en el chat de sesión 12.
 
+Sesiones 12b-13 (2026-07-08/09) — validación real + **Bloque 2 completo**:
+- Gate 1: CI verde (commit 3a40c92); compose limpio en el PC de Tomás (bootstrap →
+  migraciones → heartbeat ok); demo con números exactos y dedup entre archivos
+  demostrado; dashboard verificado visualmente vía navegador (total 23, métricas al peso).
+  Hallazgos menores 2-3 registrados en docs/16 §5.
+- **Conector `edwards_cc_pdf` v1.0.0** (docs/18 implementado): componentes REUTILIZABLES
+  (`text_utils` con parse_amount extraído de generic_csv + resolve_year con rollover;
+  `positional` motor de bandas X; `pdf_utils` con metadata y palabras posicionales) y
+  todo lo Edwards encapsulado en su parser. Sniff por COLDview+CVQT (0.98). 7
+  validaciones duras que LANZAN al fallar (+ cinturón del núcleo). Señal de calidad
+  mal diseñada detectada y eliminada durante el desarrollo (flags del generador).
+- **Cartola real junio: 19/19 tx, cuadratura dual exacta, confianza 1.0** — regresión
+  local formal PASSED (clave vía env var, la CI nunca la ve).
+- Golden Edwards: builder `build_edwards_pdf.py` (spec YAML → PDF con CVQT + cifrado
+  opcional; emite expected.json desde el spec, no del parser); 6 casos: 001 derivado-real
+  anonimizado, 002 cifrado (password en manifiesto), 003 multipágina SINTÉTICA (layout
+  real no observado — advertido), rollover dic-ene, sin movimientos, cuadratura rota
+  (error). Runner golden con password; escáner anti-fugas lee PDFs y exime @example.com
+  (RFC 2606). Hallazgo de implementación: segunda línea de encabezado (docs/18).
+- Pipeline local completo verde: ruff+format, mypy 61 archivos, import-linter 2/2,
+  45+1 tests, integración 7/7. ImportService intacto; ningún ADR tocado.
+- **Pendiente para cerrar G3:** push → CI verde → Tomás importa su cartola real desde
+  el dashboard (con su contraseña) → registrar en docs/19. Deps nuevas: pdfplumber
+  (runtime), reportlab (dev).
+
+Sesión 14 — **Sprint 3 iniciado. Política nueva del dueño: los gates bloquean el MERGE,
+no el desarrollo** (docs/19 actualizado). **Bloque 1 COMPLETO, esperando aprobación:**
+- **Motor de Insights** (`core/services/insights.py`, diseño en docs/20): 8 generadores
+  deterministas con umbrales de evidencia como constantes; contrato Insight (id estable,
+  severidad, prioridad, data canónica, explanation reproducible); un contexto por moneda;
+  evidencia-o-silencio verificado con tests (mes vacío → lista vacía).
+- `financial_summary` en reporting: deltas vs mes anterior SOLO con base comparable
+  (None honesto, jamás +∞), tasa de ahorro (neto/ingresos), promedio diario por días
+  transcurridos; endpoints /stats/summary (enriquecido) y /stats/insights.
+- Home rediseñada: 8 KPIs con deltas y ayuda explicativa por métrica, selector de
+  cuenta (evita mezclar demo con real), sección Insights con "¿cómo se calculó?"
+  expandible (explanation + data), otras monedas separadas.
+- Hallazgos docs/16 §5 pagados: desempate de última importación (period_end), migración
+  a `width="stretch"` (deprecación Streamlit), `.import_linter_cache/` al gitignore.
+- Autoauditoría: ruff+format ✓ · mypy 62 ✓ · unit+golden 45+1 ✓ · **integración 10/10**
+  (3 tests nuevos con valores calculados a mano: delta 37.0%, promedio 22.097,
+  concentración 78.8%, UBER×4) · import-linter no ejecutado en esta pasada final por
+  timeout del sandbox (verificado OK a mitad de sesión; capas sin cambios desde entonces).
+  Dos bugs propios detectados y corregidos en desarrollo: ceros espurios en data de
+  insights; formato de miles chileno faltante en títulos.
+- Detenido según forma de trabajo: **Bloques 2 (Merchant Resolver), 3 (reglas) y 4
+  (estadísticas) esperan aprobación del dueño.**
+
+Sesión 15 — **Bloque 2 COMPLETO (Merchant Resolver con memoria), esperando aprobación:**
+- Alcance ampliado por el dueño: 5 niveles + Confidence Explanation + conocimiento que
+  crece con el uso. Revisión estructural previa (exigida): el modelo NO soportaba
+  aprendizaje acumulativo → **migración 0004**: tabla `merchant_rules` (espejo de
+  classification_rules, dominio separado) + `merchant_source/confidence/rule_id` en
+  transactions + backfill de hints. Rechazado por sobre-anticipación: tabla maestra de
+  comercios e historial de resoluciones.
+- `merchant_resolver.py`: cascada determinista (regla dura: source='user' intocable),
+  semilla chilena ~22, extractor de ruido adquirente que SOLO resuelve a comercios ya
+  conocidos (no invención), confianzas como tabla de constantes, factors auditables
+  persistidos en eventos `merchant.resolved` + linaje rule_id.
+- **teach()**: corrección del usuario → regla origin=user priority=10 aplicada al
+  instante — el aprendizaje literal. Página **Comercios**: grupos sin resolver por
+  impacto + enseñanza en línea + conocimiento acumulado visible.
+- API: /merchants/{unresolved,teach,backfill,rules}. ImportService intacto (procedencia
+  de hints nuevos se marca en backfill; integración al pipeline llegará con B3).
+- Auditoría: **13/13 integración** (cascada, no-invención, idempotencia con 0 eventos
+  en 2ª pasada, teach aplica y protege), 47+1 unit/golden, mypy 65, linter 2/2, ruff ✓.
+  Bug real cazado: auto-confirmación de hint en re-ejecución (fix: exigir source='hint'
+  previo). Bug de test cazado: queries de verificación sin filtro de usuario.
+- docs/21 escrito. **Esperando aprobación para Bloque 3 (motor de reglas de categorías).**
+
+Sesión 16 — **Bloque 3 COMPLETO (Resolution Pipeline + Category Resolver), esperando
+aprobación:** capa nueva pedida por el dueño: contrato ÚNICO Resolver
+(prepare/resolve/on_applied) + ResolutionResult (cambios/confianza/explicación/
+evidencias/eventos/duración/skipped_reason). Pipeline aplica/emite/cronometra;
+resolvers solo PROPONEN → dry-run universal. Orden configurable (flag resolution.order),
+registry con merchant+category implementados y recurring/subscription/anomaly/ai como
+stubs del mismo contrato (IA sin privilegios). Autoauditoría pre-código: deuda B2
+pagada (backfill delega en pipeline; motor puro intacto; API compatible). Category
+Resolver sobre ADR-008: 22 categorías + 31 reglas semilla chilenas, decisiones
+auditadas con supersede, usuario intocable, idempotente. /transactions ahora devuelve
+nombre real de categoría (antes None hardcodeado). UI: dry-run y ejecución en
+Administración. Auditoría: **17/17 integración** (encadenamiento en una corrida,
+dry-run puro, orden, protección, idempotencia), mypy 72, 47+1 unit/golden, linter 2/2.
+Limitaciones anotadas (docs/22 §6): transfers aún cuentan en KPIs; reglas ciegas al
+signo; pipeline manual (integración post-import tocaría ImportService: prohibido).
+**Esperando aprobación para Bloque 4 (análisis y estadísticas — Fases 2+5).**
+
+Sesión 17 — **Bloque 4 COMPLETO (Centro de Inteligencia Financiera), esperando
+aprobación = cierre de Sprint 3:** revisión previa respondida (ResolutionResult NO se
+fusiona con el contexto; defecto real hallado: dry-run no encadenaba → fix SAVEPOINT,
+verificado). **Normalización financiera** como etapa `flow` del pipeline (migración
+0005, columna flow; internal = kind transfer: Pago TC/Traspasos propios/Reversos;
+`operational_condition()` como única fuente — reporting/insights/analytics la importan,
+cero duplicación; test: pago TC de 500.000 excluido del gasto). **Analytics**: 11
+preguntas en un servicio + `GET /stats/analytics` + página Análisis con disciplina
+anti-gráfico (3 visuales, cada uno con su decisión declarada); anomalías por regla
+(2.5x promedio 90 días, ≥10 cargos de historia o silencio honesto); comercios nuevos;
+deltas por categoría sin infinitos. Auditoría: **20/20 integración** (valores a mano:
+65.2% supermercado, +50% delta, flujo acumulado 770.000; savepoint dry-run puro),
+mypy 75, 47+1 unit/golden, ruff ✓. Bug propio cazado: semilla "Reversos y Ajustes" mal
+parcheada (KeyError) — detectado por tests antes de llegar a ti.
+**SPRINT 3 COMPLETO EN CÓDIGO. Para el MERGE (política de gates): push → CI verde →
+importación de cartola real de Tomás desde el dashboard → registrar G1-G3 en docs/19.**
+
 ⚠ **El código fue escrito sin entorno de ejecución disponible en la sesión.** Está
 auto-revisado pero NO ejecutado. La validación real ocurre en: (1) primer push a GitHub
 (CI corre lint, tipos, fronteras, tests unitarios y migraciones contra PG real), y
@@ -148,6 +252,7 @@ auto-revisado pero NO ejecutado. La validación real ocurre en: (1) primer push 
 | [ADR-007](docs/adr/ADR-007-chromadb-diferido.md) | Vectorial diferida con gates; ruta pgvector primero. *Rev. CTO* |
 | [ADR-008](docs/adr/ADR-008-auditoria-decisiones-ia.md) | Decisiones IA auditables: `ai_calls` + `classification_decisions` + prompts versionados |
 | [ADR-009](docs/adr/ADR-009-event-log-unificado.md) | `domain_events` append-only desde MVP; sin event sourcing |
+| [ADR-010](docs/adr/ADR-010-clasificacion-de-flujo-financiero.md) | Flow operational/internal como etapa del pipeline; derivación por `kind=transfer`; `operational_condition()` única fuente |
 
 ## 3. Implementado (sesión 3 — Fase 1, pendiente de validación en ejecución)
 

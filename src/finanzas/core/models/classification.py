@@ -37,6 +37,27 @@ class ClassificationRule(Base, UuidPkMixin, CreatedAtMixin):
     )
 
 
+class MerchantRule(Base, UuidPkMixin, CreatedAtMixin):
+    """Base de conocimiento de comercios (Sprint 3, Bloque 2; docs/21).
+
+    Nivel 3 de la cascada de resolución. Crece con el uso: las correcciones del
+    usuario se convierten en reglas origin=user; el sistema puede promover
+    patrones repetidos a origin=promoted. Espejo deliberado de
+    classification_rules (dominios separados, misma forma).
+    """
+
+    __tablename__ = "merchant_rules"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
+    matcher_type: Mapped[str] = mapped_column(String(24))  # exact_norm|contains|regex
+    pattern: Mapped[str] = mapped_column(Text)
+    merchant: Mapped[str] = mapped_column(String(120))  # nombre canónico
+    origin: Mapped[str] = mapped_column(String(12))  # system_seed|user|promoted
+    priority: Mapped[int] = mapped_column(Integer, default=100)
+    hits_count: Mapped[int] = mapped_column(Integer, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
 class AiCall(Base, UuidPkMixin, CreatedAtMixin):
     """Registro de toda llamada a un LLM (ADR-008). Reemplaza al viejo ai_usage."""
 

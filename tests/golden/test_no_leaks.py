@@ -25,7 +25,8 @@ def test_el_escaner_detecta_fugas_conocidas() -> None:
     """Un escáner que no detecta nada podría estar roto: se prueba con fugas sintéticas."""
     tool = _load_tool()
     assert tool.scan_text("RUT 12.345.678-5 contacto", [])
-    assert tool.scan_text("correo tomas@example.com", [])
+    assert tool.scan_text("correo persona@dominioprivado.cl", [])
+    assert tool.scan_text("ficticio demo@example.com", []) == []  # RFC 2606: no es fuga
     assert tool.scan_text("tarjeta 4111 1111 1111 1111", [])  # Visa de prueba, Luhn válido
     assert tool.scan_text("hola NOMBRE-REAL", ["nombre-real"])
     assert tool.scan_text("texto inocuo 1.234.567", []) == []  # monto chileno NO es fuga

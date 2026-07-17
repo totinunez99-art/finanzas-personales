@@ -1,0 +1,8 @@
+id: statements/edwards/003-junio-multipagina
+schema_version: 1
+source: sintetico
+created: 2026-07-09
+validates: [parser]
+status: active
+notes: "ADVERTENCIA - layout multipagina NO observado en muestras reales; valida la logica generica de paginacion (encabezado por pagina, SALDO FINAL solo al final)"
+bug_ref: null

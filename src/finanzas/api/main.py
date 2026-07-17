@@ -8,7 +8,15 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
 from finanzas import __version__
-from finanzas.api.routers import accounts, health, imports, stats, transactions
+from finanzas.api.routers import (
+    accounts,
+    health,
+    imports,
+    merchants,
+    resolution,
+    stats,
+    transactions,
+)
 from finanzas.shared.config import get_settings
 from finanzas.shared.errors import (
     AlreadyImportedError,
@@ -38,6 +46,8 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(accounts.router)
     app.include_router(imports.router)
+    app.include_router(merchants.router)
+    app.include_router(resolution.router)
     app.include_router(stats.router)
     app.include_router(transactions.router)
 

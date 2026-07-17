@@ -1,0 +1,8 @@
+id: edge/002-edwards-rollover-anual
+schema_version: 1
+source: sintetico
+created: 2026-07-09
+validates: [parser]
+status: active
+notes: "Cartola diciembre-enero - valida resolucion de anio DD/MM con rollover (docs/18 9.1)"
+bug_ref: null

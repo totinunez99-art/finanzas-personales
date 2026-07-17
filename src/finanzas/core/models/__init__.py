@@ -6,6 +6,7 @@ from finanzas.core.models.classification import (
     AiCall,
     ClassificationDecision,
     ClassificationRule,
+    MerchantRule,
 )
 from finanzas.core.models.operational import (
     AppSetting,
@@ -31,6 +32,7 @@ __all__ = [
     "ExchangeRate",
     "ImportBatch",
     "JobRun",
+    "MerchantRule",
     "Transaction",
     "UnparsedEmail",
     "UnrecognizedFile",

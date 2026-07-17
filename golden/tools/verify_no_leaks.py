@@ -42,6 +42,10 @@ def scan_text(text: str, terms: list[str]) -> list[str]:
     findings: list[str] = []
     for pattern, label in ((RUT_DOTTED, "RUT"), (RUT_PLAIN, "RUT"), (EMAIL, "email")):
         for match in pattern.finditer(text):
+            if label == "email" and match.group(0).lower().endswith(
+                ("@example.com", "@example.org", "@example.net")
+            ):
+                continue  # dominios reservados para ficcion (RFC 2606): no son fuga
             findings.append(f"{label}: {match.group(0)}")
     for match in CARD_CANDIDATE.finditer(text):
         digits = re.sub(r"[ -]", "", match.group(0))
@@ -57,13 +61,41 @@ def scan_cases(repo_root: Path) -> list[str]:
     terms = _forbidden_terms(repo_root)
     findings: list[str] = []
     for path in sorted(cases_dir.rglob("*")):
-        if not path.is_file() or path.suffix.lower() not in SCANNED_SUFFIXES:
+        if not path.is_file():
             continue
-        text = path.read_text(encoding="utf-8", errors="replace")
+        if path.suffix.lower() == ".pdf":
+            text = _pdf_text(path)
+        elif path.suffix.lower() in SCANNED_SUFFIXES:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        else:
+            continue
         findings.extend(
             f"{path.relative_to(repo_root)} -> {finding}" for finding in scan_text(text, terms)
         )
     return findings
+
+
+def _pdf_text(path: Path) -> str:
+    """Texto + metadata de un PDF golden (clave desde el case.yaml hermano)."""
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return ""
+    password = None
+    manifest = path.parent / "case.yaml"
+    if manifest.exists():
+        for line in manifest.read_text(encoding="utf-8").splitlines():
+            if line.startswith("password:"):
+                password = line.split(":", 1)[1].strip().strip('"')
+    try:
+        reader = PdfReader(str(path))
+        if reader.is_encrypted and (not password or not reader.decrypt(password)):
+            return ""
+        parts = [str(v) for v in (reader.metadata or {}).values()]
+        parts.extend(page.extract_text() or "" for page in reader.pages)
+        return "\n".join(parts)
+    except Exception:
+        return ""
 
 
 def main() -> int:

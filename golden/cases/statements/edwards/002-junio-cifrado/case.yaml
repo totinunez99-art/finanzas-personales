@@ -1,0 +1,9 @@
+id: statements/edwards/002-junio-cifrado
+schema_version: 1
+source: real-anonimizado
+created: 2026-07-09
+validates: [parser]
+status: active
+notes: "Identico a 001 pero CIFRADO (clave golden123 en este manifiesto): valida flujo de password en CI"
+bug_ref: null
+password: "golden123"

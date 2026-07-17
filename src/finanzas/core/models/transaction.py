@@ -57,6 +57,13 @@ class Transaction(Base, UuidPkMixin, TimestampMixin):
     description_raw: Mapped[str] = mapped_column(Text)  # inmutable: evidencia de origen
     description_norm: Mapped[str] = mapped_column(Text)
     merchant: Mapped[str | None] = mapped_column(String(120))
+    # Procedencia del comercio (Sprint 3 B2): quién lo resolvió y con qué confianza.
+    # Regla dura: merchant_source='user' JAMÁS es sobreescrito por hint/rule/ai.
+    merchant_source: Mapped[str | None] = mapped_column(String(12))  # hint|rule|user
+    merchant_confidence: Mapped[Decimal | None] = mapped_column(Numeric(3, 2))
+    merchant_rule_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("merchant_rules.id", use_alter=True)
+    )
 
     # Estado ACTUAL de clasificación, denormalizado. Historial: classification_decisions
     # (ADR-008). Único escritor: el service de clasificación.
@@ -65,6 +72,9 @@ class Transaction(Base, UuidPkMixin, TimestampMixin):
     classification_confidence: Mapped[Decimal | None] = mapped_column(Numeric(3, 2))
 
     status: Mapped[str] = mapped_column(String(12))  # TransactionStatus (docs/03 §5)
+    # Normalización financiera (S3-B4, docs/23): operational | internal.
+    # internal = pago TC / traspasos propios / reversos → fuera de KPIs.
+    flow: Mapped[str | None] = mapped_column(String(12), index=True)
     source: Mapped[str] = mapped_column(String(10))  # TransactionSource
     source_ref: Mapped[str] = mapped_column(Text)  # msg-id de correo o batch+fila
 

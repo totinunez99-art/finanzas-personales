@@ -1,0 +1,8 @@
+id: edge/003-edwards-sin-movimientos
+schema_version: 1
+source: sintetico
+created: 2026-07-09
+validates: [parser]
+status: active
+notes: "Mes sin movimientos - solo saldos inicial y final iguales"
+bug_ref: null

@@ -1,0 +1,8 @@
+id: statements/edwards/001-junio-derivado-real
+schema_version: 1
+source: real-anonimizado
+created: 2026-07-09
+validates: [parser]
+status: active
+notes: "Derivado de cartola real junio 2026 - identidades reemplazadas, montos/fechas/comercios reales. Incluye doble linea de encabezado (hallazgo P2) y saldo solo en ultima fila del dia"
+bug_ref: null

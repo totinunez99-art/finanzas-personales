@@ -76,5 +76,5 @@ def render_transactions_table(
         }
         for t in items
     ]
-    st.dataframe(rows, use_container_width=True, height=300 if compact else 600)
+    st.dataframe(rows, width="stretch", height=300 if compact else 600)
     return int(data["total"])

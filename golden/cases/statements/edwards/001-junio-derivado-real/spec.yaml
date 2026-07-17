@@ -1,0 +1,34 @@
+# Derivado de cartola real junio 2026: estructura, montos, fechas y comercios
+# REALES; titulares y contrapartes REEMPLAZADOS (docs/13 §3).
+account: "28503199"
+holder: "MARIA EJEMPLO DEMO"
+email: "demo@example.com"
+executive: "Ejecutivo Demo Uno"
+branch: "OFICINA DEMO NORTE"
+cartola_nro: 6
+period: {desde: "2026-05-29", hasta: "2026-06-30"}
+opening_date: "29/05"
+opening: 2213759
+closing_date: "30/06"
+closing: 2008038
+totals: {depositos: 150000, otrosabonos: 980000, otroscargos: 1335721, cheques: 0, giros: 0, impuestos: 0, retencion1: 0, retencionmas: 0, saldodisponible: 2008038}
+rows:
+  - {date: "01/06", detalle: "APP-TRASPASO DE:Andes Norte SpA", sucursal: "INTERNET", abono: 400000}
+  - {date: "01/06", detalle: "DEP.CHEQ.OTROS BANCOS OF. VALPO EDW", docto: "02467020", abono: 150000, saldo: 2763759}
+  - {date: "04/06", detalle: "CARGO POR PAGO TC", sucursal: "INTERNET", cargo: 200000}
+  - {date: "04/06", detalle: "TRASPASO DE:CAROLINA PEREZ SOTO", sucursal: "INTERNET", abono: 50000, saldo: 2613759}
+  - {date: "05/06", detalle: "TRASPASO A:Pedro Fuentes Rojas", sucursal: "INTERNET", cargo: 6712}
+  - {date: "05/06", detalle: "TRASPASO DE:SERVICIOS ANDINOS SPA", sucursal: "INTERNET", abono: 350000, saldo: 2957047}
+  - {date: "08/06", detalle: "TRASPASO A:Diego Salinas", sucursal: "INTERNET", cargo: 51051}
+  - {date: "08/06", detalle: "TRASPASO DE:SERVICIOS ANDINOS SPA", sucursal: "INTERNET", abono: 150000, saldo: 3055996}
+  - {date: "11/06", detalle: "TRASPASO DE:MARTIN GONZALEZ P", sucursal: "INTERNET", abono: 15000, saldo: 3070996}
+  - {date: "15/06", detalle: "PRIMA SEGURO DESGRAVAMEN *", sucursal: "CENTRAL", cargo: 4502, saldo: 3066494}
+  - {date: "18/06", detalle: "TRASPASO A:Club Deportivo Norte spa", sucursal: "INTERNET", cargo: 10000, saldo: 3056494}
+  - {date: "22/06", detalle: "CARGO POR PAGO TC", sucursal: "INTERNET", cargo: 300000}
+  - {date: "22/06", detalle: "PAGO:COPEC APP", sucursal: "BQUE MONTEMAR", cargo: 14749}
+  - {date: "22/06", detalle: "PAGO:COPEC APP", sucursal: "BQUE MONTEMAR", cargo: 3940}
+  - {date: "22/06", detalle: "TRASPASO DE:CAROLINA PEREZ SOTO", sucursal: "INTERNET", abono: 15000, saldo: 2752805}
+  - {date: "24/06", detalle: "CARGO POR PAGO TC", sucursal: "INTERNET", cargo: 500080, saldo: 2252725}
+  - {date: "25/06", detalle: "CARGO SEGURO PROTECCION BANCARIA", sucursal: "CENTRAL", cargo: 3265, saldo: 2249460}
+  - {date: "30/06", detalle: "TRASPASO A:Manuel Vidal Torres", sucursal: "INTERNET", cargo: 23000}
+  - {date: "30/06", detalle: "CARGO POR PAGO TC", sucursal: "INTERNET", cargo: 218422}

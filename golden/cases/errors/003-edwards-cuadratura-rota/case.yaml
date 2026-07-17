@@ -1,0 +1,8 @@
+id: errors/003-edwards-cuadratura-rota
+schema_version: 1
+source: sintetico
+created: 2026-07-09
+validates: [error]
+status: active
+notes: "Un cargo alterado (9999 vs 10000 en metadata): la cuadratura global y cargos_vs_metadata DEBEN fallar y el parser DEBE lanzar. Nada se importa con validacion roja."
+bug_ref: null

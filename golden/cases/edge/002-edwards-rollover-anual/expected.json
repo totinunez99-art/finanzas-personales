@@ -1,0 +1,16 @@
+{
+  "transactions": [
+    {
+      "posted_at": "2026-12-30",
+      "amount": "-10000",
+      "currency": "CLP",
+      "description_raw": "PAGO:COPEC APP"
+    },
+    {
+      "posted_at": "2027-01-05",
+      "amount": "50000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO DE:SERVICIOS ANDINOS SPA"
+    }
+  ]
+}

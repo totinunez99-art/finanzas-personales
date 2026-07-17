@@ -44,8 +44,8 @@ account_id = account_labels[selected]
 uploaded = st.file_uploader(
     "Arrastra tu cartola aquí",
     type=["csv", "xlsx", "pdf"],
-    help="Hoy es compatible el CSV de referencia (fecha;descripcion;monto[;moneda]). "
-    "El conector Banco de Chile se activará con las primeras cartolas reales.",
+    help="Formatos compatibles: cartola PDF de Banco de Chile/Edwards (con su contraseña) "
+    "y CSV de referencia (fecha;descripcion;monto[;moneda]).",
 )
 
 if uploaded is None:
@@ -112,7 +112,7 @@ for warning in preview.get("warnings", []):
     st.warning(warning)
 
 st.subheader(f"Vista previa (primeros {len(preview['sample'])} de {preview['total_rows']})")
-st.dataframe(preview["sample"], use_container_width=True)
+st.dataframe(preview["sample"], width="stretch")
 
 # ---------------------------------------------------------------- confirmar
 st.caption("Nada se ha guardado todavía. Cerrar esta página cancela la importación.")

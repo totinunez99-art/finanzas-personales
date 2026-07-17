@@ -1,0 +1,118 @@
+{
+  "transactions": [
+    {
+      "posted_at": "2026-06-01",
+      "amount": "400000",
+      "currency": "CLP",
+      "description_raw": "APP-TRASPASO DE:Andes Norte SpA"
+    },
+    {
+      "posted_at": "2026-06-01",
+      "amount": "150000",
+      "currency": "CLP",
+      "description_raw": "DEP.CHEQ.OTROS BANCOS OF. VALPO EDW"
+    },
+    {
+      "posted_at": "2026-06-04",
+      "amount": "-200000",
+      "currency": "CLP",
+      "description_raw": "CARGO POR PAGO TC"
+    },
+    {
+      "posted_at": "2026-06-04",
+      "amount": "50000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO DE:CAROLINA PEREZ SOTO"
+    },
+    {
+      "posted_at": "2026-06-05",
+      "amount": "-6712",
+      "currency": "CLP",
+      "description_raw": "TRASPASO A:Pedro Fuentes Rojas"
+    },
+    {
+      "posted_at": "2026-06-05",
+      "amount": "350000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO DE:SERVICIOS ANDINOS SPA"
+    },
+    {
+      "posted_at": "2026-06-08",
+      "amount": "-51051",
+      "currency": "CLP",
+      "description_raw": "TRASPASO A:Diego Salinas"
+    },
+    {
+      "posted_at": "2026-06-08",
+      "amount": "150000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO DE:SERVICIOS ANDINOS SPA"
+    },
+    {
+      "posted_at": "2026-06-11",
+      "amount": "15000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO DE:MARTIN GONZALEZ P"
+    },
+    {
+      "posted_at": "2026-06-15",
+      "amount": "-4502",
+      "currency": "CLP",
+      "description_raw": "PRIMA SEGURO DESGRAVAMEN *"
+    },
+    {
+      "posted_at": "2026-06-18",
+      "amount": "-10000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO A:Club Deportivo Norte spa"
+    },
+    {
+      "posted_at": "2026-06-22",
+      "amount": "-300000",
+      "currency": "CLP",
+      "description_raw": "CARGO POR PAGO TC"
+    },
+    {
+      "posted_at": "2026-06-22",
+      "amount": "-14749",
+      "currency": "CLP",
+      "description_raw": "PAGO:COPEC APP"
+    },
+    {
+      "posted_at": "2026-06-22",
+      "amount": "-3940",
+      "currency": "CLP",
+      "description_raw": "PAGO:COPEC APP"
+    },
+    {
+      "posted_at": "2026-06-22",
+      "amount": "15000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO DE:CAROLINA PEREZ SOTO"
+    },
+    {
+      "posted_at": "2026-06-24",
+      "amount": "-500080",
+      "currency": "CLP",
+      "description_raw": "CARGO POR PAGO TC"
+    },
+    {
+      "posted_at": "2026-06-25",
+      "amount": "-3265",
+      "currency": "CLP",
+      "description_raw": "CARGO SEGURO PROTECCION BANCARIA"
+    },
+    {
+      "posted_at": "2026-06-30",
+      "amount": "-23000",
+      "currency": "CLP",
+      "description_raw": "TRASPASO A:Manuel Vidal Torres"
+    },
+    {
+      "posted_at": "2026-06-30",
+      "amount": "-218422",
+      "currency": "CLP",
+      "description_raw": "CARGO POR PAGO TC"
+    }
+  ]
+}

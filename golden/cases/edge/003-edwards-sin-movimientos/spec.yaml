@@ -1,0 +1,13 @@
+account: "28503199"
+holder: "MARIA EJEMPLO DEMO"
+email: "demo@example.com"
+executive: "Ejecutivo Demo Uno"
+branch: "OFICINA DEMO NORTE"
+cartola_nro: 7
+period: {desde: "2026-07-01", hasta: "2026-07-31"}
+opening_date: "01/07"
+opening: 500000
+closing_date: "31/07"
+closing: 500000
+totals: {depositos: 0, otrosabonos: 0, otroscargos: 0, cheques: 0, giros: 0, impuestos: 0, retencion1: 0, retencionmas: 0, saldodisponible: 500000}
+rows: []

@@ -7,10 +7,11 @@ from decimal import Decimal
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from finanzas.api.deps import get_current_user, get_db
-from finanzas.core.models import User
+from finanzas.core.models import Category, User
 from finanzas.core.services.reporting import TransactionFilters, list_transactions
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -45,6 +46,10 @@ def list_endpoint(
             offset=offset,
         ),
     )
+    category_names = {
+        c.id: c.name
+        for c in db.execute(select(Category).where(Category.user_id == user.id)).scalars()
+    }
     items = [
         {
             "id": str(t.id),
@@ -53,7 +58,7 @@ def list_endpoint(
             "amount": str(t.amount),
             "currency": t.currency,
             "kind": "cargo" if t.amount < 0 else "abono",
-            "category": None,  # Sprint 2: sin clasificación; la UI muestra "Sin clasificar"
+            "category": category_names.get(t.category_id) if t.category_id else None,
             "status": t.status,
             "source": t.source,
         }

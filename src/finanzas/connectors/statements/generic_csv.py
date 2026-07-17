@@ -16,9 +16,7 @@ Formato (delimitador ';' o ','):
 
 import csv
 import io
-import unicodedata
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation
 
 from finanzas.connectors.base import RawTransaction, SourceType
 from finanzas.connectors.statements.base import (
@@ -28,16 +26,12 @@ from finanzas.connectors.statements.base import (
     ValidationCheck,
     ValidationReport,
 )
+from finanzas.connectors.statements.text_utils import parse_amount, strip_accents
 from finanzas.shared.errors import ParserError
 
 _EXPECTED_HEADER = {"fecha", "descripcion", "monto"}
 _OPTIONAL_HEADER = {"moneda"}
 _DATE_FORMATS = ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y")
-
-
-def _strip_accents(text: str) -> str:
-    normalized = unicodedata.normalize("NFKD", text)
-    return "".join(c for c in normalized if not unicodedata.combining(c))
 
 
 def _decode(content: bytes) -> str:
@@ -48,38 +42,7 @@ def _decode(content: bytes) -> str:
 
 
 def _normalize_header(cell: str) -> str:
-    return _strip_accents(cell.strip().lower())
-
-
-def parse_amount(raw: str) -> Decimal:
-    """Montos con separadores chilenos. Reglas deterministas y testeadas:
-
-    - Con '.' y ',': el separador MÁS A LA DERECHA es el decimal.
-    - Solo ',': decimal si deja 1-2 dígitos al final; si no, miles.
-    - Solo '.': decimal si deja 1-2 dígitos al final; si no, miles ("1.234.567").
-    """
-    s = raw.strip().replace(" ", "").replace("$", "")
-    if not s:
-        raise ParserError("Monto vacío")
-    negative = s.startswith("-")
-    s = s.lstrip("+-")
-    if "," in s and "." in s:
-        if s.rfind(",") > s.rfind("."):
-            s = s.replace(".", "").replace(",", ".")
-        else:
-            s = s.replace(",", "")
-    elif "," in s:
-        head, _, tail = s.rpartition(",")
-        s = f"{head.replace(',', '')}.{tail}" if len(tail) in (1, 2) else s.replace(",", "")
-    elif "." in s:
-        head, _, tail = s.rpartition(".")
-        if len(tail) not in (1, 2):
-            s = s.replace(".", "")
-    try:
-        value = Decimal(s)
-    except InvalidOperation as exc:
-        raise ParserError(f"Monto ilegible: {raw!r}") from exc
-    return -value if negative else value
+    return strip_accents(cell.strip().lower())
 
 
 def _parse_date(raw: str) -> date:

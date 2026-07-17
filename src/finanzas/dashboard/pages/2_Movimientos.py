@@ -44,7 +44,7 @@ elif batches:
             }
             for b in batches
         ],
-        use_container_width=True,
+        width="stretch",
     )
 else:
     st.caption("Sin importaciones aún.")

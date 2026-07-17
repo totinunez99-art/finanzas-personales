@@ -24,19 +24,20 @@ def _load_expected(case_dir: Path) -> dict[str, Any]:
 
 
 @pytest.mark.parametrize(
-    ("case_id", "case_dir"),
-    [(c[0], c[1]) for c in PARSER_CASES],
+    ("case_id", "case_dir", "manifest"),
+    PARSER_CASES,
     ids=[c[0] for c in PARSER_CASES],
 )
-def test_parser_contra_expected(case_id: str, case_dir: Path) -> None:
+def test_parser_contra_expected(case_id: str, case_dir: Path, manifest: dict) -> None:
     input_path = case_input(case_dir)
     content = input_path.read_bytes()
+    password = manifest.get("password")
 
-    detection = detect(input_path.name, content)
+    detection = detect(input_path.name, content, password)
     assert detection is not None, f"{case_id}: ningún parser reconoció el input"
     parser, _info = detection
 
-    statement = parser.parse(input_path.name, content)
+    statement = parser.parse(input_path.name, content, password)
     expected = _load_expected(case_dir)["transactions"]
 
     actual = [
@@ -52,17 +53,18 @@ def test_parser_contra_expected(case_id: str, case_dir: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    ("case_id", "case_dir"),
-    [(c[0], c[1]) for c in ERROR_CASES],
+    ("case_id", "case_dir", "manifest"),
+    ERROR_CASES,
     ids=[c[0] for c in ERROR_CASES],
 )
-def test_errores_declarados(case_id: str, case_dir: Path) -> None:
+def test_errores_declarados(case_id: str, case_dir: Path, manifest: dict) -> None:
     input_path = case_input(case_dir)
     content = input_path.read_bytes()
+    password = manifest.get("password")
     expected = _load_expected(case_dir)
     outcome = expected["outcome"]
 
-    detection = detect(input_path.name, content)
+    detection = detect(input_path.name, content, password)
     if outcome == "unsupported":
         assert detection is None, (
             f"{case_id}: un parser reclamó un formato que debe ser 'no compatible'"
@@ -71,7 +73,7 @@ def test_errores_declarados(case_id: str, case_dir: Path) -> None:
         assert detection is not None, f"{case_id}: el formato debía ser reconocido"
         parser, _info = detection
         with pytest.raises(ParserError) as excinfo:
-            parser.parse(input_path.name, content)
+            parser.parse(input_path.name, content, password)
         assert expected["error_contains"] in str(excinfo.value), (
             f"{case_id}: el error no contiene {expected['error_contains']!r}"
         )
