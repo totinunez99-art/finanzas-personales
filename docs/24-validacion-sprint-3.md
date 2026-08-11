@@ -442,6 +442,33 @@ veces**: como `asset` saliendo de la cuenta personal y como abono entrando en la
 empresa. La vista "Todas las cuentas" sumaría ambos lados. Mitigación inmediata: analizar
 siempre con el selector de cuenta. Solución real: reconciliación multi-cuenta (Fase 3).
 
+## 6.12 Fallos del CI #4 y correcciones (2026-08-11)
+
+El push del Sprint 4 F1 dejó el CI rojo en sus dos jobs. Ambos fallos son
+**diferencias entre el entorno de verificación local y el oficial**, no defectos
+del modelo nuevo:
+
+- **V-14 (Media) — ruff formatea código dentro de Markdown.** Las versiones nuevas
+  de ruff formatean los bloques Python embebidos en `.md`; docs/04 y docs/05 tienen
+  contratos con comentarios alineados a mano para leerse. Fix: `extend-exclude =
+  ["docs"]` en pyproject. El gate de formato aplica al código fuente, no a los
+  ejemplos ilustrativos de la documentación.
+- **V-15 (Alta) — nombres de CHECK constraints con doble prefijo (defecto latente
+  desde la migración 0001).** La 0001 declaró `name="ck_transactions_status_valid"`
+  y la convención de la metadata volvió a anteponer el prefijo, dejando en la base
+  `ck_transactions_ck_transactions_status_valid`; los modelos generan el nombre
+  simple. Estuvo latente ~7 meses porque las versiones anteriores de Alembic no
+  comparaban CHECK constraints en autogenerate. Fix: **migración 0007** que renombra
+  hacia adelante (idempotente, con guarda `IF EXISTS`), en vez de reescribir la 0001
+  — la base de producción ya tenía los nombres erróneos y debe converger al mismo
+  esquema que una instalación nueva. Verificado: `pg_constraint` queda con
+  `ck_transactions_source_valid` y `ck_transactions_status_valid`.
+
+**Lección registrada como deuda:** el entorno de verificación del asistente (Python
+3.10, versiones propias) NO es equivalente al CI (Python 3.12, últimas versiones).
+Produjo dos falsos "todo verde" en la misma sesión. Mitigación mínima: el CI es la
+única autoridad; ningún cambio se declara terminado antes de verlo verde.
+
 ## 7. Deuda técnica priorizada
 
 *(ídem — clasificación Crítica/Alta/Media/Baja)*

@@ -46,6 +46,11 @@ packages = ["src/finanzas"]
 line-length = 100
 target-version = "py312"
 src = ["src", "tests"]
+# Las versiones nuevas de ruff formatean también los bloques de código dentro de
+# Markdown. En docs/ esos bloques son ILUSTRATIVOS (contratos comentados y
+# alineados para leerse), no código ejecutable: el gate de formato aplica al
+# código fuente, no a la documentación.
+extend-exclude = ["docs"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
