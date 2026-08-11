@@ -33,7 +33,9 @@ CONFIDENCE = {
     ("system_seed", "description_contains"): Decimal("0.90"),
 }
 
-# (nombre, kind). Nivel 1 plano para el MVP; jerarquía cuando la realidad la pida.
+# (nombre, kind). El kind ES la naturaleza del movimiento (docs/25 · ADR-011):
+# expense | income | finance_cost | debt | lending | asset | internal.
+# Nivel 1 plano para el MVP; jerarquía cuando la realidad la pida.
 SEED_CATEGORIES: tuple[tuple[str, str], ...] = (
     ("Supermercado", "expense"),
     ("Combustible", "expense"),
@@ -48,16 +50,25 @@ SEED_CATEGORIES: tuple[tuple[str, str], ...] = (
     ("Compras y Tiendas", "expense"),
     ("Educación", "expense"),
     ("Entretenimiento", "expense"),
-    ("Comisiones Bancarias", "expense"),
+    ("Comisiones Bancarias", "finance_cost"),
     ("Transferencias Enviadas", "expense"),
     ("Otros Gastos", "expense"),
     ("Sueldo", "income"),
     ("Transferencias Recibidas", "income"),
-    ("Intereses", "income"),
+    ("Intereses", "finance_cost"),  # intereses PAGADOS (bug B1 de docs/24)
     ("Otros Ingresos", "income"),
-    ("Pago de Tarjeta", "transfer"),
-    ("Reversos y Ajustes", "transfer"),
-    ("Transferencias entre Cuentas", "transfer"),
+    ("Pago de Tarjeta", "internal"),
+    ("Reversos y Ajustes", "internal"),
+    ("Transferencias entre Cuentas", "internal"),
+    # --- Sprint 4 F1: naturalezas que el modelo anterior no podía representar ---
+    ("Efectivo sin detalle", "expense"),  # giro de cajero: gasto VISIBLE (decisión del dueño)
+    ("Intereses Ganados", "income"),  # distinto de "Intereses" (costo financiero)
+    ("Línea de Crédito", "debt"),  # giro (+) y pago (-): deuda, no ingreso/gasto
+    ("Deuda Tarjeta de Crédito", "debt"),
+    ("Préstamos Personales", "lending"),  # prestar (-) y cobrar (+)
+    ("Compra y Venta de Bienes", "asset"),  # el patrimonio cambia de forma
+    ("Aporte a Empresa Propia", "asset"),  # capital aportado: efectivo -> participacion
+    ("Gastos de Negocio", "expense"),  # consumo del negocio pagado desde la cuenta personal
 )
 
 # (matcher, patrón, categoría). merchant_exact evalúa tx.merchant;
@@ -96,6 +107,15 @@ SEED_RULES: tuple[tuple[str, str, str], ...] = (
     ("description_contains", "COMISION", "Comisiones Bancarias"),
     ("description_contains", "REVERSA", "Reversos y Ajustes"),
     ("description_contains", "ANULACION", "Reversos y Ajustes"),
+    # --- Sprint 4 F1: patrones reales de cuenta corriente chilena (docs/24 §6.9 R1-R3) ---
+    ("description_contains", "TRANSFERENCIA DESDE LINEA DE CREDI", "Línea de Crédito"),
+    ("description_contains", "PAGO LINEA DE CRED", "Línea de Crédito"),
+    ("description_contains", "AMORTIZACION A LINEA DE CREDITO", "Línea de Crédito"),
+    ("description_contains", "IMPUESTO LINEA DE CREDITO", "Intereses"),
+    ("description_contains", "PAGO TARJETA DE CREDITO", "Pago de Tarjeta"),
+    ("description_contains", "PAGO AUTOMATICO TARJETA", "Pago de Tarjeta"),
+    ("description_contains", "GIRO CAJERO AUTOMATICO", "Efectivo sin detalle"),
+    ("description_contains", "DEP.CHEQ", "Otros Ingresos"),  # deposito recurrente (docs/24)
 )
 
 

@@ -9,6 +9,7 @@ from datetime import date
 import streamlit as st
 
 from finanzas.dashboard.api_client import get_json
+from finanzas.dashboard.components import format_amount
 
 st.set_page_config(page_title="Análisis", page_icon="🧠", layout="wide")
 st.title("🧠 Análisis financiero")
@@ -34,15 +35,20 @@ if error:
     st.stop()
 
 st.caption(
-    f"Solo flujo operacional: pagos de tarjeta, traspasos propios y reversos están "
-    f"excluidos (docs/23). Gasto operacional del período: ${data['total_operational_expense']}."
+    "Solo movimientos que cambian tu patrimonio: deuda, préstamos, compraventa de "
+    "bienes y traspasos propios quedan excluidos (docs/25). Gasto operacional del "
+    f"período: {format_amount(data['total_operational_expense'])}."
 )
 
 st.subheader("¿Dónde gasto más? — categorías y su % del gasto")
 if data["categories"]:
     st.dataframe(
         [
-            {"Categoría": c["category"], "Total": f"${c['total']}", "% del gasto": f"{c['pct']}%"}
+            {
+                "Categoría": c["category"],
+                "Total": format_amount(c["total"]),
+                "% del gasto": f"{c['pct']}%",
+            }
             for c in data["categories"]
         ],
         width="stretch",
@@ -58,7 +64,11 @@ with col1:
     if data["merchants"]:
         st.dataframe(
             [
-                {"Comercio": m["merchant"], "Total": f"${m['total']}", "Veces": m["count"]}
+                {
+                    "Comercio": m["merchant"],
+                    "Total": format_amount(m["total"]),
+                    "Veces": m["count"],
+                }
                 for m in data["merchants"]
             ],
             width="stretch",
@@ -74,7 +84,7 @@ with col2:
                     "Fecha": t["date"],
                     "Descripción": t["description"],
                     "Comercio": t["merchant"],
-                    "Monto": f"${t['amount']}",
+                    "Monto": format_amount(t["amount"]),
                 }
                 for t in data["top_expenses"]
             ],
@@ -89,8 +99,8 @@ with col3:
             [
                 {
                     "Categoría": d["category"],
-                    "Actual": f"${d['current']}",
-                    "Anterior": f"${d['previous']}",
+                    "Actual": format_amount(d["current"]),
+                    "Anterior": format_amount(d["previous"]),
                     "Δ%": f"+{d['delta_pct']}%",
                 }
                 for d in data["grew"]
@@ -106,8 +116,8 @@ with col4:
             [
                 {
                     "Categoría": d["category"],
-                    "Actual": f"${d['current']}",
-                    "Anterior": f"${d['previous']}",
+                    "Actual": format_amount(d["current"]),
+                    "Anterior": format_amount(d["previous"]),
                     "Δ%": f"{d['delta_pct']}%",
                 }
                 for d in data["declined"]
@@ -124,7 +134,7 @@ if data["daily"]:
     )  # responde: ¿me estoy quedando corto a mitad de mes?
     if data["most_expensive_day"]:
         med = data["most_expensive_day"]
-        st.caption(f"Día más caro: {med['date']} con ${med['expense']} en cargos.")
+        st.caption(f"Día más caro: {med['date']} con {format_amount(med['expense'])} en cargos.")
 
 col5, col6 = st.columns(2)
 with col5:
@@ -152,8 +162,8 @@ if data["anomalies"]:
             {
                 "Fecha": a["date"],
                 "Descripción": a["description"],
-                "Monto": f"${a['amount']}",
-                "Umbral": f"${a['threshold']}",
+                "Monto": format_amount(a["amount"]),
+                "Umbral": format_amount(a["threshold"]),
             }
             for a in data["anomalies"]
         ],

@@ -32,7 +32,7 @@ class Category(Base, UuidPkMixin, TimestampMixin):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
     name: Mapped[str] = mapped_column(String(80))
     parent_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("categories.id"))
-    kind: Mapped[str] = mapped_column(String(10))  # CategoryKind
+    kind: Mapped[str] = mapped_column(String(16))  # naturaleza (docs/25 · ADR-011)  # CategoryKind
     is_system: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     # Jerarquía máx. 2 niveles: regla de servicio, no de DB (docs/03).

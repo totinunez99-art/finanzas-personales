@@ -72,9 +72,11 @@ class Transaction(Base, UuidPkMixin, TimestampMixin):
     classification_confidence: Mapped[Decimal | None] = mapped_column(Numeric(3, 2))
 
     status: Mapped[str] = mapped_column(String(12))  # TransactionStatus (docs/03 §5)
-    # Normalización financiera (S3-B4, docs/23): operational | internal.
-    # internal = pago TC / traspasos propios / reversos → fuera de KPIs.
-    flow: Mapped[str | None] = mapped_column(String(12), index=True)
+    # Naturaleza del movimiento (Sprint 4 F1, docs/25 · ADR-011). Dominio:
+    # expense | income | finance_cost | debt | lending | asset | internal.
+    # Solo las tres primeras cambian el patrimonio: son las que cuentan en KPIs.
+    # NULL = aún sin clasificar → se MUESTRA como operacional (no se oculta).
+    nature: Mapped[str | None] = mapped_column(String(16), index=True)
     source: Mapped[str] = mapped_column(String(10))  # TransactionSource
     source_ref: Mapped[str] = mapped_column(Text)  # msg-id de correo o batch+fila
 

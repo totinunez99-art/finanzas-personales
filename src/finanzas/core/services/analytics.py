@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from finanzas.core.models import Category, Transaction, User
 from finanzas.core.services.reporting import fmt_amount, month_bounds
-from finanzas.core.services.resolution.flow_stage import operational_condition
+from finanzas.core.services.resolution.nature_stage import operational_condition
 
 MIN_HISTORY_FOR_ANOMALIES = 10
 ANOMALY_FACTOR = Decimal("2.5")

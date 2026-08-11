@@ -4,6 +4,12 @@ Flujo en dos pasos, ambos deterministas sobre el mismo archivo:
 1. preview():   detecta, parsea y describe QUÉ pasaría. No escribe dominio
                 (única excepción: registra archivos no reconocidos).
 2. import_statement(): parsea de nuevo y escribe, con dedup a nivel de DB.
+
+Al cerrar la importación se ejecuta el Resolution Pipeline sobre la cuenta
+(flag import.run_pipeline). Motivo: con el pipeline manual, cada importación
+dejaba los KPIs sin clasificar hasta que alguien recordara ejecutarlo — medido
+en producción con 166 movimientos (docs/24 §6.11, hallazgo V-11). El fallo del
+enriquecimiento NUNCA invalida la importación: se registra y se sigue.
 """
 
 import hashlib
@@ -361,5 +367,34 @@ def import_statement(
         duplicated=duplicated,
     )
     session.flush()
+    _enrich_after_import(session, user, account.id, batch)
     session.refresh(batch)  # carga created_at (server_default) antes de que lo lea la API
     return batch
+
+
+def _enrich_after_import(
+    session: Session, user: User, account_id: uuid.UUID, batch: ImportBatch
+) -> None:
+    """Clasifica lo recién importado. Aislado del resultado de la importación.
+
+    Import tardío del pipeline: evita un ciclo de imports y mantiene el costo en
+    quien lo usa. Si el pipeline falla, la importación YA está escrita y válida;
+    se degrada a modo manual y se deja traza (docs/24 V-11).
+    """
+    from finanzas.core.services.settings_service import SettingsService
+
+    if not bool(SettingsService().get(session, "import.run_pipeline")):
+        logger.info("pipeline_post_import_desactivado", batch=str(batch.id))
+        return
+    try:
+        from finanzas.core.services.resolution import pipeline
+
+        report = pipeline.run(session, user, account_id=account_id)
+        logger.info(
+            "pipeline_post_import",
+            batch=str(batch.id),
+            transacciones=report["transactions"],
+            etapas={name: stats["applied"] for name, stats in report["stages"].items()},
+        )
+    except Exception as exc:  # el enriquecimiento es best-effort: nunca tumba la importación
+        logger.error("pipeline_post_import_fallo", batch=str(batch.id), error=str(exc))

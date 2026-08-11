@@ -89,7 +89,7 @@ def test_encadenamiento_merchant_luego_categoria(dataset) -> None:  # type: igno
     report = pipeline.run(session, user)  # orden por flag: merchant,category
     session.commit()
 
-    assert report["order"] == ["merchant", "category", "flow"]
+    assert report["order"] == ["merchant", "category", "nature"]
     tx = session.execute(
         select(Transaction).where(
             Transaction.user_id == user.id,

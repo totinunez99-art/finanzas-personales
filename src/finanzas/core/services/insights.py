@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 
 from finanzas.core.models import Transaction, User
 from finanzas.core.services.reporting import fmt_amount, month_bounds
-from finanzas.core.services.resolution.flow_stage import operational_condition
+from finanzas.core.services.resolution.nature_stage import operational_condition
 
 
 def _display(value: Decimal) -> str:

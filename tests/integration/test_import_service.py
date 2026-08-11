@@ -104,6 +104,15 @@ def test_flujo_completo_con_dedup(session: Session, user_account) -> None:  # ty
     total = session.execute(select(Transaction)).scalars().all()
     assert len(total) == 4
 
+    # 5. Enriquecimiento automático post-import (docs/24 V-11): lo importado NO
+    #    queda sin clasificar esperando que alguien recuerde ejecutar el pipeline.
+    #    El CSV trae "SUPERMERCADO LIDER" → categoría Supermercado → naturaleza expense.
+    cafes = [t for t in total if "STARBUCKS" in t.description_norm]
+    assert cafes and all(t.nature == "expense" for t in cafes), (
+        "el pipeline debe haber corrido solo tras la importación"
+    )
+    assert all(t.category_id is not None for t in cafes)
+
 
 def test_formato_desconocido_no_falla_y_se_registra(session: Session, user_account) -> None:  # type: ignore[no-untyped-def]
     from finanzas.core.models import UnrecognizedFile

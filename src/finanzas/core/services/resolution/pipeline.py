@@ -16,8 +16,8 @@ from finanzas.core.models import Transaction, User
 from finanzas.core.services.events import emit
 from finanzas.core.services.resolution.base import ResolutionContext, Resolver
 from finanzas.core.services.resolution.category_resolver import CategoryStage
-from finanzas.core.services.resolution.flow_stage import FlowStage
 from finanzas.core.services.resolution.merchant_stage import MerchantStage
+from finanzas.core.services.resolution.nature_stage import NatureStage
 from finanzas.core.services.resolution.stubs import (
     AiResolver,
     AnomalyResolver,
@@ -32,13 +32,13 @@ logger = get_logger("resolution_pipeline")
 REGISTRY: dict[str, type] = {
     "merchant": MerchantStage,
     "category": CategoryStage,
-    "flow": FlowStage,
+    "nature": NatureStage,
     "recurring": RecurringResolver,
     "subscription": SubscriptionResolver,
     "anomaly": AnomalyResolver,
     "ai": AiResolver,
 }
-DEFAULT_ORDER = "merchant,category,flow"
+DEFAULT_ORDER = "merchant,category,nature"
 
 
 def _build_stages(names: list[str] | None, session: Session) -> list[Resolver]:

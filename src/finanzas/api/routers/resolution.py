@@ -29,7 +29,9 @@ def run(
 
 @router.get("/resolvers")
 def resolvers() -> dict[str, Any]:
-    implemented = {"merchant", "category"}
+    # Derivado del registro, no hardcodeado (V-01 de docs/24): un stub se declara
+    # a sí mismo con is_stub, así el endpoint no puede quedar desactualizado.
+    implemented = {n for n, cls in pipeline.REGISTRY.items() if not getattr(cls, "is_stub", False)}
     return {
         "available": list(pipeline.REGISTRY.keys()),
         "implemented": sorted(implemented),

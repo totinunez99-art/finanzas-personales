@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from finanzas.core.models import ImportBatch, Transaction, User
 from finanzas.core.services.dedup import normalize_description
-from finanzas.core.services.resolution.flow_stage import operational_condition
+from finanzas.core.services.resolution.nature_stage import operational_condition
 
 
 @dataclass(frozen=True)

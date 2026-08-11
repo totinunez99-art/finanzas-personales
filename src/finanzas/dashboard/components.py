@@ -10,14 +10,21 @@ from finanzas.dashboard.api_client import get_json
 _CLP_CURRENCIES = {"CLP"}
 
 
-def format_amount(amount: str, currency: str) -> str:
-    """CLP sin decimales con separador de miles chileno; otras monedas tal cual."""
+def format_amount(amount: str | float | None, currency: str = "CLP") -> str:
+    """Formato monetario chileno con sigla: '$1.768.886 CLP'.
+
+    Única función de formato monetario de la UI (no duplicar): separador de miles
+    con punto, sin decimales en CLP, y la sigla siempre visible para que ningún
+    número quede sin unidad.
+    """
+    if amount is None or amount == "":
+        return "—"
     try:
         value = float(amount)
-    except ValueError:
-        return amount
+    except (TypeError, ValueError):
+        return str(amount)
     if currency in _CLP_CURRENCIES:
-        return f"${value:,.0f}".replace(",", ".")
+        return f"${value:,.0f} {currency}".replace(",", "@").replace(".", ",").replace("@", ".")
     return f"{value:,.2f} {currency}"
 
 

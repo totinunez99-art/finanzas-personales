@@ -1,6 +1,6 @@
 """Bootstrap one-shot del sistema (servicio 'bootstrap' de docker-compose).
 
-Secuencia: esperar PostgreSQL → migrar (Alembic) → usuario por defecto.
+Secuencia: esperar PostgreSQL → migrar (Alembic) → usuario por defecto → catálogo semilla.
 Idempotente por diseño: Alembic no re-aplica revisiones; el seed no duplica.
 Sale con código != 0 ante cualquier fallo → compose NO inicia api/worker
 (service_completed_successfully).
@@ -15,6 +15,7 @@ from alembic.config import Config
 
 from finanzas.core.db import session_scope, wait_for_db
 from finanzas.core.services.bootstrap import ensure_default_user
+from finanzas.core.services.resolution.category_resolver import ensure_seed
 from finanzas.shared.config import get_settings
 from finanzas.shared.errors import ConfigError
 from finanzas.shared.logging import configure_logging, get_logger
@@ -37,6 +38,11 @@ def main() -> int:
         with session_scope() as session:
             user = ensure_default_user(session, settings.default_user_email)
             logger.info("default_user_ready", email=user.email)
+            # Catálogo de categorías/reglas desde la instalación (decisión del
+            # dueño, validación S3): mismo ensure_seed idempotente que usa el
+            # pipeline; aquí garantiza catálogo ANTES de la primera importación.
+            seeded = ensure_seed(session, user)
+            logger.info("catalog_seed_ready", **seeded)
     except ConfigError as exc:
         logger.error("bootstrap_failed", detail=exc.message)
         print(f"\nBOOTSTRAP FALLÓ: {exc.message}\n", file=sys.stderr)

@@ -13,6 +13,7 @@ from finanzas.core.services.resolution.base import (
 
 
 class _NotImplementedResolver:
+    is_stub = True
     name = "stub"
 
     def prepare(self, ctx: ResolutionContext) -> None:
@@ -26,14 +27,17 @@ class _NotImplementedResolver:
 
 
 class RecurringResolver(_NotImplementedResolver):
+    is_stub = True
     name = "recurring"
 
 
 class SubscriptionResolver(_NotImplementedResolver):
+    is_stub = True
     name = "subscription"
 
 
 class AnomalyResolver(_NotImplementedResolver):
+    is_stub = True
     name = "anomaly"
 
 
@@ -41,4 +45,5 @@ class AiResolver(_NotImplementedResolver):
     """Nivel 5: actuará SOLO cuando los deterministas no alcancen confianza.
     Sin privilegios: mismo contrato, mismas reglas de auditoría."""
 
+    is_stub = True
     name = "ai"

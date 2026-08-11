@@ -81,7 +81,7 @@ class EventType(enum.StrEnum):
     TRANSACTION_CORRECTED = "transaction.corrected"
     TRANSACTION_RECONCILED = "transaction.reconciled"
     TRANSACTION_DEDUPLICATED = "transaction.deduplicated"
-    FLOW_NORMALIZED = "transaction.flow_normalized"
+    NATURE_ASSIGNED = "transaction.nature_assigned"
     MERCHANT_RESOLVED = "merchant.resolved"
     MERCHANT_TAUGHT = "merchant.taught"  # corrección del usuario convertida en regla
     RULE_CREATED = "rule.created"

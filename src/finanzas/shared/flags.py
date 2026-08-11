@@ -63,8 +63,18 @@ _CATALOG: dict[str, FlagDef] = {
         FlagDef(
             key="resolution.order",
             value_type=str,
-            default="merchant,category,flow",
+            default="merchant,category,nature",
             description="Orden del Resolution Pipeline (CSV de nombres; docs/22).",
+        ),
+        FlagDef(
+            key="import.run_pipeline",
+            value_type=bool,
+            default=True,
+            description=(
+                "Ejecuta el Resolution Pipeline al terminar una importación (docs/24 V-11). "
+                "Apagarlo devuelve al modo manual: los KPIs quedan sin clasificar hasta "
+                "ejecutarlo desde Administración."
+            ),
         ),
         FlagDef(
             key="connectors.email_polling",

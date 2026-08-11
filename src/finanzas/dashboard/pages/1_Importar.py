@@ -55,7 +55,7 @@ content = uploaded.getvalue()
 
 # ---------------------------------------------------------------- contraseña (PDF protegido)
 # La clave vive solo en el estado de esta página y en el request; jamás se almacena.
-password = st.session_state.get("import_pdf_password", "")
+password = st.session_state.get("pdf_password", "")
 request_data = {"account_id": account_id}
 if password:
     request_data["password"] = password
@@ -68,13 +68,20 @@ if error:
 
 if preview.get("password_required"):
     st.warning(preview["message"])
-    st.text_input(
+    typed = st.text_input(
         "Contraseña del PDF",
         type="password",
-        key="import_pdf_password",
+        key="import_pdf_password_widget",
         help="Se usa una sola vez para leer el archivo. No se guarda en ninguna parte.",
     )
-    st.stop()  # al escribirla, Streamlit re-ejecuta y el preview se reintenta con la clave
+    # Clave en sesión PROPIA, no la del widget: Streamlit BORRA el estado de un
+    # widget cuando deja de renderizarse, y este campo desaparece al validarse la
+    # clave — pero el botón Confirmar la necesita viva en el rerun siguiente.
+    # Guard typed != password: sin él, una clave incorrecta re-ejecutaría en loop.
+    if typed and typed != password:
+        st.session_state["pdf_password"] = typed
+        st.rerun()
+    st.stop()
 
 if not preview["recognized"]:
     st.warning(preview["message"])

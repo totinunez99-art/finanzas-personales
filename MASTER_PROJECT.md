@@ -253,6 +253,7 @@ auto-revisado pero NO ejecutado. La validación real ocurre en: (1) primer push 
 | [ADR-008](docs/adr/ADR-008-auditoria-decisiones-ia.md) | Decisiones IA auditables: `ai_calls` + `classification_decisions` + prompts versionados |
 | [ADR-009](docs/adr/ADR-009-event-log-unificado.md) | `domain_events` append-only desde MVP; sin event sourcing |
 | [ADR-010](docs/adr/ADR-010-clasificacion-de-flujo-financiero.md) | Flow operational/internal como etapa del pipeline; derivación por `kind=transfer`; `operational_condition()` única fuente |
+| [ADR-011](docs/adr/ADR-011-naturaleza-del-movimiento.md) | **Sustituye ADR-010**: `nature` de 7 valores (expense/income/finance_cost/debt/lending/asset/internal); el kind de categoría ES la naturaleza |
 
 ## 3. Implementado (sesión 3 — Fase 1, pendiente de validación en ejecución)
 

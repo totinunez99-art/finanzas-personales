@@ -1,7 +1,7 @@
-"""Analytics + normalización de flujos contra PostgreSQL real (S3-B4, docs/23).
+"""Analytics + naturaleza del movimiento contra PostgreSQL real (docs/23 · docs/25).
 
-Valores esperados calculados A MANO. Verifica además que los movimientos
-internos (flow=internal) quedan fuera de KPIs y analytics.
+Valores esperados calculados A MANO. Verifica además que los movimientos que NO
+cambian el patrimonio (nature=internal/debt/lending/asset) quedan fuera de KPIs.
 """
 
 import os
@@ -37,7 +37,7 @@ def migrated_engine():  # type: ignore[no-untyped-def]
 
 @pytest.fixture()
 def dataset(migrated_engine):  # type: ignore[no-untyped-def]
-    """Mayo 2026 con pipeline completo (merchant→category→flow) sobre datos crudos."""
+    """Mayo 2026 con pipeline completo (merchant→category→nature) sobre datos crudos."""
     from finanzas.core.models import Account, Transaction, User
     from finanzas.core.services.dedup import compute_dedup_hash, normalize_description
     from finanzas.core.services.resolution import pipeline
@@ -90,7 +90,7 @@ def dataset(migrated_engine):  # type: ignore[no-untyped-def]
         add(date(2026, 5, 22), "-500000", "CARGO POR PAGO TC")
         session.commit()
 
-        pipeline.run(session, user)  # merchant → category → flow
+        pipeline.run(session, user)  # merchant → category → nature
         session.commit()
         yield session, user, account
 
@@ -106,7 +106,7 @@ def test_flujo_interno_excluido_de_kpis(dataset) -> None:  # type: ignore[no-unt
             Transaction.description_norm == "CARGO POR PAGO TC",
         )
     ).scalar_one()
-    assert pago_tc.flow == "internal"  # normalizado por FlowStage
+    assert pago_tc.nature == "internal"  # asignado por NatureStage (ADR-011)
 
     s = financial_summary(session, user, period="2026-05")
     clp = next(c for c in s["by_currency"] if c["currency"] == "CLP")
@@ -188,12 +188,12 @@ def test_dry_run_encadena_gracias_al_savepoint(dataset) -> None:  # type: ignore
 
     report = pipeline.run(session, u2, dry_run=True)
     session.commit()
-    # category y flow aplicaron EN LA SIMULACIÓN (encadenado con merchant)
+    # category y nature aplicaron EN LA SIMULACIÓN (encadenado con merchant)
     assert report["stages"]["category"]["applied"] == 1
-    assert report["stages"]["flow"]["applied"] == 1
+    assert report["stages"]["nature"]["applied"] == 1
     # ...y NADA persistió (savepoint revertido): ni cambios ni decisiones ni semillas
     tx = session.execute(select(Transaction).where(Transaction.user_id == u2.id)).scalar_one()
-    assert tx.merchant is None and tx.category_id is None and tx.flow is None
+    assert tx.merchant is None and tx.category_id is None and tx.nature is None
     assert (
         session.execute(
             select(ClassificationDecision).where(ClassificationDecision.user_id == u2.id)
@@ -202,3 +202,72 @@ def test_dry_run_encadena_gracias_al_savepoint(dataset) -> None:  # type: ignore
         .all()
         == []
     )
+
+
+def test_linea_de_credito_no_es_ingreso_ni_gasto(migrated_engine):  # type: ignore[no-untyped-def]
+    """Sprint 4 F1 (ADR-011): el caso REAL que refutó el modelo anterior.
+
+    Un giro de línea de crédito ENTRA plata pero es deuda; su pago SALE plata pero
+    extingue deuda. Con el flow binario ambos contaminaban ingreso y gasto
+    (evidencia: docs/24 §6). Valores calculados a mano.
+    """
+    from finanzas.core.models import Account, Transaction, User
+    from finanzas.core.services.dedup import compute_dedup_hash, normalize_description
+    from finanzas.core.services.reporting import financial_summary
+    from finanzas.core.services.resolution import pipeline
+
+    with Session(migrated_engine) as session:
+        user = User(email=f"linea-{uuid.uuid4().hex[:6]}@example.com", display_name="Linea")
+        session.add(user)
+        session.flush()
+        account = Account(
+            user_id=user.id, name="CC Edwards", bank="bancochile", type="checking", currency="CLP"
+        )
+        session.add(account)
+        session.flush()
+
+        movimientos = [
+            ("TRANSFERENCIA DESDE LINEA DE CREDI", Decimal("300000")),  # deuda tomada
+            ("PAGO LINEA DE CRED:012850313500", Decimal("-300000")),  # deuda pagada
+            ("INTERESES LINEA DE CREDITO", Decimal("-5000")),  # costo financiero: SI es gasto
+            ("PAGO:UNIMARC PIN DE MO", Decimal("-40000")),  # consumo real
+        ]
+        for index, (descripcion, monto) in enumerate(movimientos):
+            norm = normalize_description(descripcion)
+            session.add(
+                Transaction(
+                    user_id=user.id,
+                    account_id=account.id,
+                    posted_at=date(2026, 5, 10),
+                    amount=monto,
+                    currency="CLP",
+                    description_raw=descripcion,
+                    description_norm=norm,
+                    status="confirmed",
+                    source="statement",
+                    source_ref=f"linea:{index}",
+                    dedup_hash=compute_dedup_hash(
+                        str(account.id), date(2026, 5, 10), monto, "CLP", norm, index
+                    ),
+                )
+            )
+        session.commit()
+
+        pipeline.run(session, user)
+        session.commit()
+
+        naturalezas = {
+            t.description_raw: t.nature
+            for t in session.execute(
+                select(Transaction).where(Transaction.user_id == user.id)
+            ).scalars()
+        }
+        assert naturalezas["TRANSFERENCIA DESDE LINEA DE CREDI"] == "debt"
+        assert naturalezas["PAGO LINEA DE CRED:012850313500"] == "debt"
+        assert naturalezas["INTERESES LINEA DE CREDITO"] == "finance_cost"
+        assert naturalezas["PAGO:UNIMARC PIN DE MO"] == "expense"
+
+        resumen = financial_summary(session, user, period="2026-05")
+        clp = next(c for c in resumen["by_currency"] if c["currency"] == "CLP")
+        assert clp["income"] == "0"  # los 300.000 de la linea NO son ingreso
+        assert clp["expense"] == "45000"  # 40.000 consumo + 5.000 costo financiero
